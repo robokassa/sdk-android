@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="light_pitch">#B8E1DC</color>
+    <color name="colorPrimaryDark">#F47E3A</color>
+    <color name="colorAccent">#F47E3A</color>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryVariant">#FFFFFF</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="green">#009500</color>
+    <color name="yellow">#FFF700</color>
+
+    <color name="red">#FF0000</color>
+    <color name="aim_yellow">#F3E600</color>
+    <color name="aim_blue">#3461AB</color>
+
+    <color name="button_dis_color">#464646</color>
+    <color name="map_background_color">#646464</color>
+    <color name="map_grid_color">#b3b3b3</color>
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/white</color>
+    <color name="light_blue_400">#FF29B6F6</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="gray_400">#FFBDBDBD</color>
+    <color name="gray_600">#FF757575</color>
+
+    <color name="transparent">#00000000</color>
+    <color name="transparent_none">#00000000</color>
+    <color name="transparent_white">#ebffffff</color>
+    <color name="color_green">#4ba066</color>
+</resources>
