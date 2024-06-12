@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-
-    tools:context=".SimplePay.RobokassaActivity">
+    tools:context=".view.RobokassaActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -14,12 +13,11 @@
         android:layout_height="60dp"
         android:layout_marginStart="0dp"
         android:layout_marginEnd="0dp"
-        android:background="?attr/colorPrimary"
+        android:background="?attr/colorPrimaryDark"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         android:homeAsUpIndicator="@drawable/app_back_arrow"
         app:layout_constraintEnd_toEndOf="parent"
-        app:title=" "
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" >
         <TextView
@@ -29,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
-    </androidx.appcompat.widget.Toolbar>>
+    </androidx.appcompat.widget.Toolbar>
 
     <WebView
         android:id="@+id/webView"
@@ -39,6 +37,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

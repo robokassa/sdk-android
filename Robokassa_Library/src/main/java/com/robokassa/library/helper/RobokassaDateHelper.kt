@@ -1,11 +1,11 @@
-package com.robokassa.library.Assistant
+package com.robokassa.library.helper
 
 import android.annotation.SuppressLint
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 
-public object RobokassaDateHelper {
+object RobokassaDateHelper {
     private const val ISO_8601_24H_FULL_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
 
     @JvmName("toIsoStringNullable")
