@@ -48,8 +48,8 @@ class MainActivity : AppCompatActivity() {
                 name = "Ботинки детские",
                 sum = 0.1,
                 quantity = 1,
-                //paymentMethod = PaymentMethod.FULL_PAYMENT,
-                //tax = Tax.NONE
+                paymentMethod = PaymentMethod.FULL_PAYMENT,
+                tax = Tax.NONE
             )
         )
     )
@@ -84,10 +84,11 @@ class MainActivity : AppCompatActivity() {
                 }
                 customerParams {
                     culture = Culture.RU
+                    email = "p.kolosov@list.ru"
                 }
                 viewParams {
                     toolbarText = "Простая оплата"
-                    toolbarTextColor = "#ffffff"
+                    toolbarTextColor = "#ff0000"
                 }
             }.also {
                 it.setCredentials(MERCHANT, PWD_1, PWD_2)
@@ -142,6 +143,11 @@ class MainActivity : AppCompatActivity() {
                         }
                         customerParams {
                             culture = Culture.RU
+                            email = "p.kolosov@list.ru"
+                        }
+                        viewParams {
+                            toolbarText = "Холдирование"
+                            toolbarTextColor = "#aaaaaa"
                         }
                     }.also {
                         it.setCredentials(MERCHANT, PWD_1, PWD_2)

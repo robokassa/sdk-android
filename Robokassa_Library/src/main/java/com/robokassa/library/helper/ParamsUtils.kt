@@ -67,7 +67,7 @@ fun PaymentParams.payPostParams(isTest: Boolean): String = run {
         val json = gson.toJson(it)
         val jsonEncoded = URLEncoder.encode(json, "utf-8")
         result += "&Receipt=$jsonEncoded"
-        signature += ":$jsonEncoded"
+        signature += ":$json"
     }
 
     if (this.order.isHold) {

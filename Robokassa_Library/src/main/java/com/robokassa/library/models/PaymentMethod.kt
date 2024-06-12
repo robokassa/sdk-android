@@ -1,11 +1,20 @@
 package com.robokassa.library.models
 
-enum class PaymentMethod(val api: String) {
-    FULL_PREPAYMENT("full_prepayment"),
-    PREPAYMENT("prepayment"),
-    ADVANCE("advance"),
-    FULL_PAYMENT("full_payment"),
-    PARTIAL_PAYMENT("partial_payment"),
-    CREDIT("credit"),
-    CREDIT_PAYMENT("credit_payment")
+import com.google.gson.annotations.SerializedName
+
+enum class PaymentMethod {
+    @SerializedName("full_prepayment")
+    FULL_PREPAYMENT,
+    @SerializedName("prepayment")
+    PREPAYMENT,
+    @SerializedName("advance")
+    ADVANCE,
+    @SerializedName("full_payment")
+    FULL_PAYMENT,
+    @SerializedName("partial_payment")
+    PARTIAL_PAYMENT,
+    @SerializedName("credit")
+    CREDIT,
+    @SerializedName("credit_payment")
+    CREDIT_PAYMENT
 }
