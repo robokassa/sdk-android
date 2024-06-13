@@ -225,15 +225,10 @@ class MainActivity : AppCompatActivity() {
     private fun showRecurrentMessage(invoiceId: Int?) {
         invoiceId ?: return
         AlertDialog.Builder(this)
-            .setTitle(R.string.app_hold_title)
-            .setNegativeButton(R.string.app_hold_confirm) { _, _ ->
+            .setTitle(R.string.app_button_recurrent_pay)
+            .setPositiveButton(R.string.app_recurrent_confirm) { _, _ ->
                 params?.let {
-
-                }
-            }
-            .setPositiveButton(R.string.app_hold_cancel) { _, _ ->
-                params?.let {
-
+                    val pa = PaymentAction.init()
                 }
             }
             .show()

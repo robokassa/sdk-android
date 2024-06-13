@@ -39,6 +39,10 @@ class PaymentAction internal constructor(
         }
     }
 
+    fun payRecurrent(params: PaymentParams) {
+        _state.value = PayActionIdle
+    }
+
     companion object {
         fun init() = PaymentAction()
     }

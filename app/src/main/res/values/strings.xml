@@ -7,9 +7,9 @@
     <string name="app_hold_title">Холдирование средств</string>
     <string name="app_hold_confirm">Подтверждение холдирования</string>
     <string name="app_hold_cancel">Отмена холдирования</string>
-    <string name="app_hold_start">Холдирование</string>
     <string name="app_hold_confirm_success">Успешное подтверждение холдирования</string>
     <string name="app_hold_confirm_fail">Ошибка подтверждения холдирования</string>
     <string name="app_hold_cancel_success">Успешная отмена холдирования</string>
     <string name="app_hold_cancel_fail">Ошибка отмены холдирования</string>
+    <string name="app_recurrent_confirm">Подтверждение повторной оплаты</string>
 </resources>
