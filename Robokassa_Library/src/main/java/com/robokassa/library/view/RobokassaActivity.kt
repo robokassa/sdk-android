@@ -100,8 +100,8 @@ class RobokassaActivity : AppCompatActivity() {
                     Logger.i("Check state: $it")
                     val data = Intent().apply {
                         putExtra(EXTRA_INVOICE_ID, paymentParams.order.invoiceId)
-                        putExtra(EXTRA_CODE_RESULT, it.requestCode.code)
-                        putExtra(EXTRA_CODE_STATE, it.stateCode.code)
+                        putExtra(EXTRA_CODE_RESULT, it.requestCode)
+                        putExtra(EXTRA_CODE_STATE, it.stateCode)
                         putExtra(EXTRA_ERROR_DESC, it.desc)
                         putExtra(EXTRA_ERROR, it.error)
                     }

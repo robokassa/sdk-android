@@ -15,6 +15,8 @@ import com.robokassa.library.view.RobokassaActivity
 import com.robokassa.library.errors.RoboApiException
 import com.robokassa.library.errors.asRoboApiException
 import com.robokassa.library.models.CheckPayState
+import com.robokassa.library.models.CheckPayStateCode
+import com.robokassa.library.models.CheckRequestCode
 import com.robokassa.library.params.PaymentParams
 import kotlinx.parcelize.Parcelize
 import java.io.Serializable
@@ -23,19 +25,19 @@ object RobokassaPayLauncher {
     sealed class Result
     class Success(
         val invoiceId: Int?,
-        val resultCode: String?,
-        val stateCode: String?
+        val resultCode: CheckRequestCode?,
+        val stateCode: CheckPayStateCode?
     ) : Result()
 
     data object Canceled : Result()
     class Error(
         val error: Throwable?,
-        val resultCode: String?,
-        val stateCode: String?,
+        val resultCode: CheckRequestCode?,
+        val stateCode: CheckPayStateCode?,
         val desc: String?
     ) : Result() {
 
-        constructor(error: RoboApiException) : this(error, error.response?.requestCode?.code, error.response?.stateCode?.code, error.response?.desc)
+        constructor(error: RoboApiException) : this(error, error.response?.requestCode, error.response?.stateCode, error.response?.desc)
     }
 
     @Parcelize
@@ -52,20 +54,20 @@ object RobokassaPayLauncher {
                 checkNotNull(intent)
                 Success(
                     intent.getIntExtra(EXTRA_INVOICE_ID, -1),
-                    intent.getStringExtra(EXTRA_CODE_RESULT),
-                    intent.getStringExtra(EXTRA_CODE_STATE)
+                    intent.serializable(EXTRA_CODE_RESULT),
+                    intent.serializable(EXTRA_CODE_STATE)
                 )
             }
 
             AppCompatActivity.RESULT_FIRST_USER -> {
                 val th = intent.getError()
-                val c = intent?.getStringExtra(EXTRA_CODE_RESULT)
-                val s = intent?.getStringExtra(EXTRA_CODE_STATE)
+                val c: CheckRequestCode? = intent?.serializable(EXTRA_CODE_RESULT)
+                val s: CheckPayStateCode? = intent?.serializable(EXTRA_CODE_STATE)
                 val d = intent?.getStringExtra(EXTRA_ERROR_DESC)
                 Error(
                     th,
-                    c ?: th?.asRoboApiException()?.response?.requestCode?.code,
-                    s ?: th?.asRoboApiException()?.response?.stateCode?.code,
+                    c ?: th?.asRoboApiException()?.response?.requestCode,
+                    s ?: th?.asRoboApiException()?.response?.stateCode,
                     d ?: th?.asRoboApiException()?.response?.desc
                 )
             }

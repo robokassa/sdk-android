@@ -4,16 +4,20 @@ import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.robokassa.library.helper.Logger
 import com.robokassa.library.models.CheckPayStateCode
 import com.robokassa.library.models.Culture
+import com.robokassa.library.models.PayActionState
 import com.robokassa.library.models.PaymentMethod
 import com.robokassa.library.models.Receipt
 import com.robokassa.library.models.ReceiptItem
 import com.robokassa.library.models.Tax
 import com.robokassa.library.params.PaymentParams
+import com.robokassa.library.pay.PaymentAction
 import com.robokassa.library.pay.RobokassaPayLauncher
 import com.robokassa_sample.databinding.ActivityMainBinding
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     private val payProcess = registerForActivityResult(RobokassaPayLauncher.Contract) { result ->
         when (result) {
             is RobokassaPayLauncher.Success -> {
-                if (result.stateCode == CheckPayStateCode.HOLD_SUCCESS.code) {
+                if (result.stateCode == CheckPayStateCode.HOLD_SUCCESS) {
                     showHoldingMessage()
                 } else {
                     if (params?.order?.isRecurrent == true) {
@@ -183,12 +187,36 @@ class MainActivity : AppCompatActivity() {
             .setTitle(R.string.app_hold_title)
             .setNegativeButton(R.string.app_hold_confirm) { _, _ ->
                 params?.let {
-
+                    val pa = PaymentAction.init()
+                    pa.confirmHold(it)
+                    lifecycleScope.launch {
+                        pa.state.collect { ps ->
+                            if (ps is PayActionState) {
+                                if (ps.success) {
+                                    showAnswerMessage(getString(R.string.app_hold_confirm_success))
+                                } else {
+                                    showAnswerMessage(getString(R.string.app_hold_confirm_fail))
+                                }
+                            }
+                        }
+                    }
                 }
             }
             .setPositiveButton(R.string.app_hold_cancel) { _, _ ->
                 params?.let {
-
+                    val pa = PaymentAction.init()
+                    pa.cancelHold(it)
+                    lifecycleScope.launch {
+                        pa.state.collect { ps ->
+                            if (ps is PayActionState) {
+                                if (ps.success) {
+                                    showAnswerMessage(getString(R.string.app_hold_cancel_success))
+                                } else {
+                                    showAnswerMessage(getString(R.string.app_hold_cancel_fail))
+                                }
+                            }
+                        }
+                    }
                 }
             }
             .show()

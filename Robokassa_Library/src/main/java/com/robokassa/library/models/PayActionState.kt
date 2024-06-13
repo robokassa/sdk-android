@@ -9,3 +9,5 @@ data class PayActionState(val success: Boolean) : RoboApiResponse() {
     }
 
 }
+
+data object PayActionIdle : RoboApiResponse()
