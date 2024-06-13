@@ -23,6 +23,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.util.EncodingUtils
 import com.robokassa.library.EXTRA_CODE_RESULT
 import com.robokassa.library.EXTRA_CODE_STATE
+import com.robokassa.library.EXTRA_ERROR
+import com.robokassa.library.EXTRA_ERROR_DESC
 import com.robokassa.library.EXTRA_INVOICE_ID
 import com.robokassa.library.EXTRA_PARAMS
 import com.robokassa.library.EXTRA_TEST_PARAMETERS
@@ -31,6 +33,7 @@ import com.robokassa.library.databinding.ActivityRobokassaBinding
 import com.robokassa.library.helper.Logger
 import com.robokassa.library.helper.payPostParams
 import com.robokassa.library.models.CheckPayStateCode
+import com.robokassa.library.models.CheckRequestCode
 import com.robokassa.library.params.PaymentParams
 import com.robokassa.library.urlMain
 import kotlinx.coroutines.launch
@@ -94,15 +97,29 @@ class RobokassaActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.paymentState.collect {
+                    Logger.i("Check state: $it")
                     val data = Intent().apply {
                         putExtra(EXTRA_INVOICE_ID, paymentParams.order.invoiceId)
                         putExtra(EXTRA_CODE_RESULT, it.requestCode.code)
                         putExtra(EXTRA_CODE_STATE, it.stateCode.code)
+                        putExtra(EXTRA_ERROR_DESC, it.desc)
+                        putExtra(EXTRA_ERROR, it.error)
                     }
                     when (it.stateCode) {
                         CheckPayStateCode.NOT_INITED,
                         CheckPayStateCode.INITED_NOT_PAYED,
-                        CheckPayStateCode.PAYED_NOT_TRANSFERRED -> {}
+                        CheckPayStateCode.PAYED_NOT_TRANSFERRED -> {
+                            if (it.requestCode == CheckRequestCode.TIMEOUT_ERROR ||
+                                it.requestCode == CheckRequestCode.SERVER_ERROR ||
+                                it.requestCode == CheckRequestCode.SIGNATURE_ERROR ||
+                                it.requestCode == CheckRequestCode.SHOP_ERROR ||
+                                it.requestCode == CheckRequestCode.INVOICE_DOUBLE_ERROR ||
+                                it.requestCode == CheckRequestCode.INVOICE_ZERO_ERROR) {
+                                model.stopStatusTimer()
+                                setResult(RESULT_FIRST_USER, data)
+                                finish()
+                            }
+                        }
                         CheckPayStateCode.CANCELLED_NOT_PAYED -> {
                             model.stopStatusTimer()
                             setResult(RESULT_CANCELED, data)

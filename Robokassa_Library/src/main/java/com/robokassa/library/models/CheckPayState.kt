@@ -1,31 +1,37 @@
 package com.robokassa.library.models
 
 import com.gitlab.mvysny.konsumexml.konsumeXml
+import com.robokassa.library.errors.RoboApiException
+import com.robokassa.library.helper.Logger
 
 data class CheckPayState(
     val requestCode: CheckRequestCode,
-    val stateCode: CheckPayStateCode
+    val stateCode: CheckPayStateCode,
+    val desc: String? = null,
+    val error: RoboApiException? = null
 ) : RoboApiResponse() {
 
     companion object {
         fun parse(src: String?): CheckPayState {
             var codeParse = ""
             var stateCodeParse = ""
+            var descParse = ""
             try {
                 src?.konsumeXml()?.apply {
                     child("OperationStateResponse") {
-                        child("Result") {
-                            codeParse = childText("Code")
+                        childOrNull("Result") {
+                            codeParse = childTextOrNull("Code") ?: ""
+                            descParse = childTextOrNull("Description") ?: ""
                         }
-                        child("State") {
-                            stateCodeParse = childText("Code")
+                        childOrNull("State") {
+                            stateCodeParse = childTextOrNull("Code") ?: ""
                             skipContents()
-
                         }
                         skipContents()
                     }
                 }
             } catch (e: Exception) {
+                Logger.e("Check parse error $e")
                 return CheckPayState(
                     stateCode = CheckPayStateCode.NOT_INITED,
                     requestCode = CheckRequestCode.CHECKING
@@ -54,7 +60,8 @@ data class CheckPayState(
             }
             return CheckPayState(
                 stateCode = stateCode,
-                requestCode = requestCode
+                requestCode = requestCode,
+                desc = descParse
             )
         }
     }

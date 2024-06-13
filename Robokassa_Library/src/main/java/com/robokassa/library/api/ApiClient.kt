@@ -1,7 +1,6 @@
 package com.robokassa.library.api
 
-import com.robokassa.library.api.Api.API_TIMEOUT
-import com.robokassa.library.api.Api.FORM_URL_ENCODED
+import com.robokassa.library.FORM_URL_ENCODED
 import com.robokassa.library.errors.RoboApiException
 import com.robokassa.library.helper.Logger
 import com.robokassa.library.helper.cancelHoldPostParams
@@ -13,9 +12,12 @@ import com.robokassa.library.models.CheckRequestCode
 import com.robokassa.library.models.PayActionState
 import com.robokassa.library.models.RoboApiResponse
 import com.robokassa.library.params.PaymentParams
+import com.robokassa.library.syncServerTimeoutDefault
 import com.robokassa.library.urlHoldingCancel
 import com.robokassa.library.urlHoldingConfirm
 import com.robokassa.library.urlSimpleSync
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
@@ -30,8 +32,8 @@ import java.util.concurrent.TimeUnit
 internal class ApiClient {
 
     private val okHttpClient = OkHttpClient.Builder()
-        .connectTimeout(API_TIMEOUT, TimeUnit.MILLISECONDS)
-        .readTimeout(API_TIMEOUT, TimeUnit.MILLISECONDS)
+        .connectTimeout(syncServerTimeoutDefault, TimeUnit.MILLISECONDS)
+        .readTimeout(syncServerTimeoutDefault, TimeUnit.MILLISECONDS)
         .also {
             if (Logger.logEnabled) {
                 val interceptor = HttpLoggingInterceptor()
@@ -44,7 +46,7 @@ internal class ApiClient {
         params: PaymentParams,
         apiMethod: ApiMethod,
         onSuccess: (RoboApiResponse) -> Unit,
-        onFailure: (Exception) -> Unit
+        onFailure: (RoboApiException) -> Unit
     ) {
 
         try {
@@ -95,6 +97,33 @@ internal class ApiClient {
                     e
                 )
             )
+        }
+    }
+
+    internal fun performRequestAsync(
+        params: PaymentParams,
+        apiMethod: ApiMethod
+    ): Deferred<Result<RoboApiResponse>> {
+        val deferred: CompletableDeferred<Result<RoboApiResponse>> = CompletableDeferred()
+        call(
+            params,
+            apiMethod,
+            onSuccess = {
+                deferred.complete(Result.success(it))
+            },
+            onFailure = {
+                deferred.complete(Result.failure(it))
+            })
+        return deferred
+    }
+
+    internal suspend fun performSuspendRequest(
+        params: PaymentParams,
+        apiMethod: ApiMethod
+    ): Result<RoboApiResponse> {
+        return performRequestAsync(params, apiMethod).run {
+            start()
+            await()
         }
     }
 

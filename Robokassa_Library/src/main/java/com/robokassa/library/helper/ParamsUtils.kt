@@ -29,7 +29,7 @@ fun PaymentParams.checkPostParams(): String = run {
 
     Logger.i("Signature src: $signature")
 
-    result += "&SignatureValue=$signatureValue"
+    result += "&Signature=$signatureValue"
 
     Logger.i("Post params: $result")
 
@@ -143,7 +143,7 @@ fun PaymentParams.confirmHoldPostParams(): String = run {
         val json = gson.toJson(it)
         val jsonEncoded = URLEncoder.encode(json, "utf-8")
         result += "&Receipt=$jsonEncoded"
-        signature += ":$jsonEncoded"
+        signature += ":$json"
     }
 
     signature += ":" + this.password1

@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.robokassa.library.EXTRA_CODE_RESULT
 import com.robokassa.library.EXTRA_CODE_STATE
 import com.robokassa.library.EXTRA_ERROR
+import com.robokassa.library.EXTRA_ERROR_DESC
 import com.robokassa.library.EXTRA_INVOICE_ID
 import com.robokassa.library.view.RobokassaActivity
 import com.robokassa.library.errors.RoboApiException
@@ -28,11 +29,13 @@ object RobokassaPayLauncher {
 
     data object Canceled : Result()
     class Error(
-        val error: Throwable,
-        val errorCode: CheckPayState?
+        val error: Throwable?,
+        val resultCode: String?,
+        val stateCode: String?,
+        val desc: String?
     ) : Result() {
 
-        constructor(error: RoboApiException) : this(error, error.response)
+        constructor(error: RoboApiException) : this(error, error.response?.requestCode?.code, error.response?.stateCode?.code, error.response?.desc)
     }
 
     @Parcelize
@@ -53,20 +56,30 @@ object RobokassaPayLauncher {
                     intent.getStringExtra(EXTRA_CODE_STATE)
                 )
             }
+
             AppCompatActivity.RESULT_FIRST_USER -> {
                 val th = intent.getError()
-                Error(th, th.asRoboApiException()?.response)
+                val c = intent?.getStringExtra(EXTRA_CODE_RESULT)
+                val s = intent?.getStringExtra(EXTRA_CODE_STATE)
+                val d = intent?.getStringExtra(EXTRA_ERROR_DESC)
+                Error(
+                    th,
+                    c ?: th?.asRoboApiException()?.response?.requestCode?.code,
+                    s ?: th?.asRoboApiException()?.response?.stateCode?.code,
+                    d ?: th?.asRoboApiException()?.response?.desc
+                )
             }
+
             else -> Canceled
         }
 
     }
 
-    fun Intent?.getError(): Throwable {
-        return checkNotNull(this?.serializable(EXTRA_ERROR))
+    fun Intent?.getError(): Throwable? {
+        return this?.serializable(EXTRA_ERROR)
     }
 
-    inline fun <reified T : Serializable> Intent?.serializable(key: String): T? = when {
+    private inline fun <reified T : Serializable> Intent?.serializable(key: String): T? = when {
         this == null -> null
         Build.VERSION.SDK_INT >= 33 -> getSerializableExtra(key, T::class.java)
         else -> @Suppress("DEPRECATION") getSerializableExtra(key) as? T

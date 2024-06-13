@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.robokassa.library.helper.Logger
+import com.robokassa.library.models.CheckPayStateCode
 import com.robokassa.library.models.Culture
 import com.robokassa.library.models.PaymentMethod
 import com.robokassa.library.models.Receipt
@@ -27,12 +28,23 @@ class MainActivity : AppCompatActivity() {
     private val payProcess = registerForActivityResult(RobokassaPayLauncher.Contract) { result ->
         when (result) {
             is RobokassaPayLauncher.Success -> {
-                showAnswerMessage("Code: " + result.resultCode + ", StatusCode: " + result.stateCode)
+                if (result.stateCode == CheckPayStateCode.HOLD_SUCCESS.code) {
+                    showHoldingMessage()
+                } else {
+                    if (params?.order?.isRecurrent == true) {
+                        showRecurrentMessage(result.invoiceId)
+                    } else {
+                        showAnswerMessage("Code: " + result.resultCode + ", StatusCode: " + result.stateCode)
+                    }
+                }
             }
             is RobokassaPayLauncher.Canceled -> {
                 params = null
             }
             is RobokassaPayLauncher.Error -> {
+                showAnswerMessage(
+                    "Code: " + result.resultCode + ", StatusCode: " + result.stateCode + ", Desc: " + result.desc + ", Error: " + result.error
+                )
                 params = null
             }
         }
@@ -100,11 +112,61 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun holdingPayClick() {
-        showHoldingMessage()
+        if (binding.orderNumber.text.isNullOrEmpty()) {
+            showAnswerMessage(getString(R.string.app_order_hint))
+        } else {
+            params = PaymentParams().setParams {
+                orderParams {
+                    invoiceId = binding.orderNumber.text.toString().toInt()
+                    description = "Test Simple Pay"
+                    orderSum = 0.1
+                    receipt = sampleReceipt
+                    isHold = true
+                }
+                customerParams {
+                    culture = Culture.RU
+                    email = "p.kolosov@list.ru"
+                }
+                viewParams {
+                    toolbarText = "Холдирование"
+                    toolbarTextColor = "#aaaaaa"
+                }
+            }.also {
+                it.setCredentials(MERCHANT, PWD_1, PWD_2)
+            }
+            params?.let {
+                payProcess.launch(RobokassaPayLauncher.StartPay(it))
+            }
+        }
     }
 
     private fun recurrentPayClick() {
-
+        if (binding.orderNumber.text.isNullOrEmpty()) {
+            showAnswerMessage(getString(R.string.app_order_hint))
+        } else {
+            params = PaymentParams().setParams {
+                orderParams {
+                    invoiceId = binding.orderNumber.text.toString().toInt()
+                    description = "Test Simple Pay"
+                    orderSum = 0.1
+                    receipt = sampleReceipt
+                    isRecurrent = true
+                }
+                customerParams {
+                    culture = Culture.RU
+                    email = "p.kolosov@list.ru"
+                }
+                viewParams {
+                    toolbarText = "Рекуррентный платеж"
+                    toolbarTextColor = "#cccccc"
+                }
+            }.also {
+                it.setCredentials(MERCHANT, PWD_1, PWD_2)
+            }
+            params?.let {
+                payProcess.launch(RobokassaPayLauncher.StartPay(it))
+            }
+        }
     }
 
     private fun showAnswerMessage(description: String) {
@@ -124,37 +186,26 @@ class MainActivity : AppCompatActivity() {
 
                 }
             }
-            .setNeutralButton(R.string.app_hold_cancel) { _, _ ->
+            .setPositiveButton(R.string.app_hold_cancel) { _, _ ->
                 params?.let {
 
                 }
             }
-            .setPositiveButton(R.string.app_hold_start) { _, _ ->
-                if (binding.orderNumber.text.isNullOrEmpty()) {
-                    showAnswerMessage(getString(R.string.app_order_hint))
-                } else {
-                    params = PaymentParams().setParams {
-                        orderParams {
-                            invoiceId = binding.orderNumber.text.toString().toInt()
-                            description = "Test Simple Pay"
-                            orderSum = 0.1
-                            receipt = sampleReceipt
-                            isHold = true
-                        }
-                        customerParams {
-                            culture = Culture.RU
-                            email = "p.kolosov@list.ru"
-                        }
-                        viewParams {
-                            toolbarText = "Холдирование"
-                            toolbarTextColor = "#aaaaaa"
-                        }
-                    }.also {
-                        it.setCredentials(MERCHANT, PWD_1, PWD_2)
-                    }
-                    params?.let {
-                        payProcess.launch(RobokassaPayLauncher.StartPay(it))
-                    }
+            .show()
+    }
+
+    private fun showRecurrentMessage(invoiceId: Int?) {
+        invoiceId ?: return
+        AlertDialog.Builder(this)
+            .setTitle(R.string.app_hold_title)
+            .setNegativeButton(R.string.app_hold_confirm) { _, _ ->
+                params?.let {
+
+                }
+            }
+            .setPositiveButton(R.string.app_hold_cancel) { _, _ ->
+                params?.let {
+
                 }
             }
             .show()
