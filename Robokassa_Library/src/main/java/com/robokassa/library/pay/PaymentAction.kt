@@ -41,6 +41,13 @@ class PaymentAction internal constructor(
 
     fun payRecurrent(params: PaymentParams) {
         _state.value = PayActionIdle
+        manager.launchOnBackground {
+            try {
+                _state.value = (api.performSuspendRequest(params, ApiMethod.RECURRENT).getOrNull() as? PayActionState) ?: PayActionState(false)
+            } catch (e: Throwable) {
+                _state.value = PayActionState(false)
+            }
+        }
     }
 
     companion object {

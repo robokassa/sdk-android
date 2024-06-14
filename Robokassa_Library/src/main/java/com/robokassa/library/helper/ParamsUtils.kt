@@ -193,6 +193,54 @@ fun PaymentParams.cancelHoldPostParams(): String = run {
     result
 }
 
+fun PaymentParams.recurrentPostParams(): String = run {
+
+    var result = ""
+    var signature = ""
+
+    result += "MerchantLogin=" + this.merchantLogin
+    signature += this.merchantLogin
+
+    this.order.orderSum.takeIf { it > 0.0 }?.let {
+        val outSum = it.toString()
+        result += "&OutSum=$outSum"
+        signature += ":$outSum"
+    }
+
+    this.order.invoiceId.takeIf { it > 0 }?.let {
+        val id = it.toString()
+        result += "&invoiceID=$id"
+        signature += ":$id"
+    } ?: run {
+        signature += ":"
+    }
+
+    this.order.previousInvoiceId.takeIf { it > 0 }?.let {
+        val id = it.toString()
+        result += "&PreviousInvoiceID=$id"
+    }
+
+    this.order.receipt?.let {
+        val gson = Gson()
+        val json = gson.toJson(it)
+        val jsonEncoded = URLEncoder.encode(json, "utf-8")
+        result += "&Receipt=$jsonEncoded"
+        signature += ":$json"
+    }
+
+    signature += ":" + this.password1
+
+    val signatureValue = md5Hash(signature)
+
+    Logger.i("Signature src: $signature")
+
+    result += "&SignatureValue=$signatureValue"
+
+    Logger.i("Post params: $result")
+
+    result
+}
+
 fun md5Hash(str: String): String {
     val md = MessageDigest.getInstance("MD5")
     val n =  BigInteger(1, md.digest(str.toByteArray(Charsets.UTF_8))).toString(16).padStart(32, '0')

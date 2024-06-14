@@ -3,7 +3,6 @@ package com.robokassa.library.view
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -125,14 +124,14 @@ class RobokassaActivity : AppCompatActivity() {
                             setResult(RESULT_CANCELED, data)
                             finish()
                         }
-                        CheckPayStateCode.PAYBACK,
-                        CheckPayStateCode.STOPPED -> {
+                        CheckPayStateCode.PAYMENT_PAYBACK,
+                        CheckPayStateCode.PAYMENT_STOPPED -> {
                             model.stopStatusTimer()
                             setResult(RESULT_FIRST_USER, data)
                             finish()
                         }
                         CheckPayStateCode.HOLD_SUCCESS,
-                        CheckPayStateCode.SUCCESS -> {
+                        CheckPayStateCode.PAYMENT_SUCCESS -> {
                             model.stopStatusTimer()
                             setResult(RESULT_OK, data)
                             finish()
@@ -178,11 +177,6 @@ class RobokassaActivity : AppCompatActivity() {
                     return true
                 }
                 return super.shouldOverrideUrlLoading(view, request)
-            }
-
-            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                super.onPageStarted(view, url, favicon)
-                Logger.v("WebView onPageStarted: $url")
             }
 
         }

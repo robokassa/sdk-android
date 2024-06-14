@@ -54,9 +54,9 @@ data class CheckPayState(
                 "10" -> stateCode = CheckPayStateCode.CANCELLED_NOT_PAYED
                 "20" -> stateCode = CheckPayStateCode.HOLD_SUCCESS
                 "50" -> stateCode = CheckPayStateCode.PAYED_NOT_TRANSFERRED
-                "60" -> stateCode = CheckPayStateCode.PAYBACK
-                "80" -> stateCode = CheckPayStateCode.STOPPED
-                "100" -> stateCode = CheckPayStateCode.SUCCESS
+                "60" -> stateCode = CheckPayStateCode.PAYMENT_PAYBACK
+                "80" -> stateCode = CheckPayStateCode.PAYMENT_STOPPED
+                "100" -> stateCode = CheckPayStateCode.PAYMENT_SUCCESS
             }
             return CheckPayState(
                 stateCode = stateCode,

@@ -6,15 +6,18 @@ import com.robokassa.library.helper.Logger
 import com.robokassa.library.helper.cancelHoldPostParams
 import com.robokassa.library.helper.checkPostParams
 import com.robokassa.library.helper.confirmHoldPostParams
+import com.robokassa.library.helper.recurrentPostParams
 import com.robokassa.library.models.CheckPayState
 import com.robokassa.library.models.CheckPayStateCode
 import com.robokassa.library.models.CheckRequestCode
 import com.robokassa.library.models.PayActionState
+import com.robokassa.library.models.PayRecurrentState
 import com.robokassa.library.models.RoboApiResponse
 import com.robokassa.library.params.PaymentParams
 import com.robokassa.library.syncServerTimeoutDefault
 import com.robokassa.library.urlHoldingCancel
 import com.robokassa.library.urlHoldingConfirm
+import com.robokassa.library.urlRecurring
 import com.robokassa.library.urlSimpleSync
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
@@ -42,7 +45,7 @@ internal class ApiClient {
             }
         }.build()
 
-    internal fun call(
+    private fun call(
         params: PaymentParams,
         apiMethod: ApiMethod,
         onSuccess: (RoboApiResponse) -> Unit,
@@ -58,7 +61,7 @@ internal class ApiClient {
                             "Unable to performRequest request $apiMethod",
                             CheckPayState(
                                 CheckRequestCode.TIMEOUT_ERROR,
-                                CheckPayStateCode.STOPPED
+                                CheckPayStateCode.PAYMENT_STOPPED
                             ),
                             e
                         )
@@ -70,10 +73,16 @@ internal class ApiClient {
                         val responseCode = response.code
                         if (response.isSuccessful) {
                             val responseBody = response.body?.string()
-                            val result = if (apiMethod == ApiMethod.CHECK) {
-                                CheckPayState.parse(responseBody)
-                            } else {
-                                PayActionState.parse(responseBody)
+                            val result = when (apiMethod) {
+                                ApiMethod.CHECK -> {
+                                    CheckPayState.parse(responseBody)
+                                }
+                                ApiMethod.RECURRENT -> {
+                                    PayRecurrentState.parse(responseBody, params.order.invoiceId)
+                                }
+                                else -> {
+                                    PayActionState.parse(responseBody)
+                                }
                             }
                             onSuccess(result)
                         } else {
@@ -82,7 +91,7 @@ internal class ApiClient {
                                     "Unsuccessful response $apiMethod, code $responseCode",
                                     CheckPayState(
                                         CheckRequestCode.SERVER_ERROR,
-                                        CheckPayStateCode.STOPPED
+                                        CheckPayStateCode.PAYMENT_STOPPED
                                     )
                                 )
                             )
@@ -141,6 +150,11 @@ internal class ApiClient {
             ApiMethod.HOLD_CANCEL -> {
                 builder.url(urlHoldingCancel)
                 val body = this.cancelHoldPostParams()
+                builder.post(body.toRequestBody(FORM_URL_ENCODED.toMediaType()))
+            }
+            ApiMethod.RECURRENT -> {
+                builder.url(urlRecurring)
+                val body = this.recurrentPostParams()
                 builder.post(body.toRequestBody(FORM_URL_ENCODED.toMediaType()))
             }
         }

@@ -9,6 +9,7 @@ import com.robokassa.library.helper.Logger
 import com.robokassa.library.models.CheckPayStateCode
 import com.robokassa.library.models.Culture
 import com.robokassa.library.models.PayActionState
+import com.robokassa.library.models.PayRecurrentState
 import com.robokassa.library.models.PaymentMethod
 import com.robokassa.library.models.Receipt
 import com.robokassa.library.models.ReceiptItem
@@ -222,13 +223,33 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun showRecurrentMessage(invoiceId: Int?) {
-        invoiceId ?: return
+    private fun showRecurrentMessage(invoice: Int?) {
+        invoice ?: return
         AlertDialog.Builder(this)
             .setTitle(R.string.app_button_recurrent_pay)
             .setPositiveButton(R.string.app_recurrent_confirm) { _, _ ->
-                params?.let {
-                    val pa = PaymentAction.init()
+                val recurrentParams = PaymentParams().setParams {
+                    orderParams {
+                        invoiceId = invoice + 1
+                        previousInvoiceId = invoice
+                        orderSum = 0.1
+                        receipt = sampleReceipt
+                    }
+                }.also {
+                    it.setCredentials(MERCHANT, PWD_1, PWD_2)
+                }
+                val pa = PaymentAction.init()
+                pa.payRecurrent(recurrentParams)
+                lifecycleScope.launch {
+                    pa.state.collect { ps ->
+                        if (ps is PayRecurrentState) {
+                            if (ps.success) {
+                                showAnswerMessage(getString(R.string.app_recurrent_confirm_success))
+                            } else {
+                                showAnswerMessage(getString(R.string.app_recurrent_confirm_fail))
+                            }
+                        }
+                    }
                 }
             }
             .show()

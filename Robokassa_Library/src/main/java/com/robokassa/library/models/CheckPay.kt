@@ -17,7 +17,7 @@ enum class CheckPayStateCode(val code: String) {
     CANCELLED_NOT_PAYED("10"),
     HOLD_SUCCESS("20"),
     PAYED_NOT_TRANSFERRED("50"),
-    PAYBACK("60"),
-    STOPPED("80"),
-    SUCCESS("100")
+    PAYMENT_PAYBACK("60"),
+    PAYMENT_STOPPED("80"),
+    PAYMENT_SUCCESS("100")
 }
