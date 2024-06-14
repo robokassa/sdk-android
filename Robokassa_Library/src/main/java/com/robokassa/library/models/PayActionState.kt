@@ -4,7 +4,7 @@ data class PayActionState(val success: Boolean) : RoboApiResponse() {
 
     companion object {
         fun parse(src: String?): PayActionState {
-            return PayActionState(src?.contains("success:true") == true)
+            return PayActionState(src?.contains("success:true") == true || src?.contains("success: true") == true)
         }
     }
 

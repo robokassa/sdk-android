@@ -243,7 +243,5 @@ fun PaymentParams.recurrentPostParams(): String = run {
 
 fun md5Hash(str: String): String {
     val md = MessageDigest.getInstance("MD5")
-    val n =  BigInteger(1, md.digest(str.toByteArray(Charsets.UTF_8))).toString(16).padStart(32, '0')
-    Logger.i("MD hash: $n")
-    return n
+    return BigInteger(1, md.digest(str.toByteArray(Charsets.UTF_8))).toString(16).padStart(32, '0')
 }

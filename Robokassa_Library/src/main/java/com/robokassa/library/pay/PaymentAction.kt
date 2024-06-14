@@ -5,6 +5,7 @@ import com.robokassa.library.api.ApiMethod
 import com.robokassa.library.helper.CoroutineManager
 import com.robokassa.library.models.PayActionIdle
 import com.robokassa.library.models.PayActionState
+import com.robokassa.library.models.PayRecurrentState
 import com.robokassa.library.models.RoboApiResponse
 import com.robokassa.library.params.PaymentParams
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,9 +44,9 @@ class PaymentAction internal constructor(
         _state.value = PayActionIdle
         manager.launchOnBackground {
             try {
-                _state.value = (api.performSuspendRequest(params, ApiMethod.RECURRENT).getOrNull() as? PayActionState) ?: PayActionState(false)
+                _state.value = (api.performSuspendRequest(params, ApiMethod.RECURRENT).getOrNull() as? PayRecurrentState) ?: PayRecurrentState(false)
             } catch (e: Throwable) {
-                _state.value = PayActionState(false)
+                _state.value = PayRecurrentState(false)
             }
         }
     }

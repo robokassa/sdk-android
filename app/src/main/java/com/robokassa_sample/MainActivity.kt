@@ -19,6 +19,8 @@ import com.robokassa.library.pay.PaymentAction
 import com.robokassa.library.pay.RobokassaPayLauncher
 import com.robokassa_sample.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.Date
 
 class MainActivity : AppCompatActivity() {
 
@@ -98,6 +100,9 @@ class MainActivity : AppCompatActivity() {
                     description = "Test Simple Pay"
                     orderSum = 0.1
                     receipt = sampleReceipt
+                    expirationDate = Date(Calendar.getInstance().apply {
+                        add(Calendar.DAY_OF_MONTH, 1)
+                    }.timeInMillis)
                 }
                 customerParams {
                     culture = Culture.RU

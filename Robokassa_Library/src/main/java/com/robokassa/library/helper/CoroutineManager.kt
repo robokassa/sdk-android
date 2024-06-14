@@ -31,12 +31,6 @@ internal class CoroutineManager(
         }
     }
 
-    suspend fun withMain(block: suspend CoroutineScope.() -> Unit) {
-        withContext(main) {
-            block.invoke(this)
-        }
-    }
-
     fun launchOnBackground(block: suspend CoroutineScope.() -> Unit): Job {
         return coroutineScope.launch(Dispatchers.IO) {
             block.invoke(this)
