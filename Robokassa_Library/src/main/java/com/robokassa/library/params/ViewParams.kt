@@ -6,14 +6,31 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.robokassa.library.errors.RoboSdkException
 
+/**
+ * Объект данных о внешнем виде страницы оплаты.
+ */
 class ViewParams() : Params(), Parcelable {
 
+    /**
+     * Цвет фона тулбара на странице оплаты.
+     * Указывается в формате Color Hex, например, #000000 для черного цвета.
+     */
     var toolbarBgColor: String? = null
 
+    /**
+     * Цвет текста тулбара на странице оплаты.
+     * Указывается в формате Color Hex, например, #cccccc для серого цвета.
+     */
     var toolbarTextColor: String? = null
 
+    /**
+     * Значение заголовка в тулбаре на странице оплаты. Максимальная длина — 30 символов.
+     */
     var toolbarText: String? = null
 
+    /**
+     * Этот параметр показывает, отображать или нет тулбар на странице оплаты.
+     */
     var hasToolbar: Boolean = true
 
     private constructor(parcel: Parcel) : this() {
@@ -52,6 +69,7 @@ class ViewParams() : Params(), Parcelable {
         } catch (e: Exception) {
             false
         }) { "Color has invalid format" }
+        check((toolbarText?.length ?: 0) > 30) { "Toolbar text value cannot be 30 chars longer" }
     }
 
     companion object CREATOR : Parcelable.Creator<ViewParams> {

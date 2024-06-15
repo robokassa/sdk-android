@@ -4,6 +4,13 @@ import com.gitlab.mvysny.konsumexml.konsumeXml
 import com.robokassa.library.errors.RoboApiException
 import com.robokassa.library.helper.Logger
 
+/**
+ * Объект с результатом обработки платежного окна Robokassa.
+ * @property requestCode
+ * @property stateCode
+ * @property desc
+ * @property error
+ */
 data class CheckPayState(
     val requestCode: CheckRequestCode,
     val stateCode: CheckPayStateCode,
@@ -40,23 +47,23 @@ data class CheckPayState(
             var requestCode = CheckRequestCode.CHECKING
 
             when (codeParse) {
-                "0" -> requestCode = CheckRequestCode.SUCCESS
-                "1" -> requestCode = CheckRequestCode.SIGNATURE_ERROR
-                "2" -> requestCode = CheckRequestCode.SHOP_ERROR
-                "3" -> requestCode = CheckRequestCode.INVOICE_ZERO_ERROR
-                "4" -> requestCode = CheckRequestCode.INVOICE_DOUBLE_ERROR
-                "1000" -> requestCode = CheckRequestCode.SERVER_ERROR
+                CheckRequestCode.SUCCESS.code -> requestCode = CheckRequestCode.SUCCESS
+                CheckRequestCode.SIGNATURE_ERROR.code -> requestCode = CheckRequestCode.SIGNATURE_ERROR
+                CheckRequestCode.SHOP_ERROR.code -> requestCode = CheckRequestCode.SHOP_ERROR
+                CheckRequestCode.INVOICE_ZERO_ERROR.code -> requestCode = CheckRequestCode.INVOICE_ZERO_ERROR
+                CheckRequestCode.INVOICE_DOUBLE_ERROR.code -> requestCode = CheckRequestCode.INVOICE_DOUBLE_ERROR
+                CheckRequestCode.SERVER_ERROR.code -> requestCode = CheckRequestCode.SERVER_ERROR
             }
 
             var stateCode = CheckPayStateCode.NOT_INITED
             when (stateCodeParse) {
-                "5" -> stateCode = CheckPayStateCode.INITED_NOT_PAYED
-                "10" -> stateCode = CheckPayStateCode.CANCELLED_NOT_PAYED
-                "20" -> stateCode = CheckPayStateCode.HOLD_SUCCESS
-                "50" -> stateCode = CheckPayStateCode.PAYED_NOT_TRANSFERRED
-                "60" -> stateCode = CheckPayStateCode.PAYMENT_PAYBACK
-                "80" -> stateCode = CheckPayStateCode.PAYMENT_STOPPED
-                "100" -> stateCode = CheckPayStateCode.PAYMENT_SUCCESS
+                CheckPayStateCode.INITED_NOT_PAYED.code -> stateCode = CheckPayStateCode.INITED_NOT_PAYED
+                CheckPayStateCode.CANCELLED_NOT_PAYED.code -> stateCode = CheckPayStateCode.CANCELLED_NOT_PAYED
+                CheckPayStateCode.HOLD_SUCCESS.code -> stateCode = CheckPayStateCode.HOLD_SUCCESS
+                CheckPayStateCode.PAYED_NOT_TRANSFERRED.code -> stateCode = CheckPayStateCode.PAYED_NOT_TRANSFERRED
+                CheckPayStateCode.PAYMENT_PAYBACK.code -> stateCode = CheckPayStateCode.PAYMENT_PAYBACK
+                CheckPayStateCode.PAYMENT_STOPPED.code -> stateCode = CheckPayStateCode.PAYMENT_STOPPED
+                CheckPayStateCode.PAYMENT_SUCCESS.code -> stateCode = CheckPayStateCode.PAYMENT_SUCCESS
             }
             return CheckPayState(
                 stateCode = stateCode,

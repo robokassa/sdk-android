@@ -1,13 +1,18 @@
 package com.robokassa.library.helper
 
 import com.google.gson.Gson
-import com.robokassa.library.helper.RobokassaDateHelper.toIsoString
 import com.robokassa.library.params.PaymentParams
 import java.math.BigInteger
 import java.net.URLEncoder
 import java.security.MessageDigest
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-fun PaymentParams.checkPostParams(): String = run {
+private const val ISO_8601_24H_FULL_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+
+internal fun PaymentParams.checkPostParams(): String = run {
 
     var result = ""
     var signature = ""
@@ -36,7 +41,7 @@ fun PaymentParams.checkPostParams(): String = run {
     result
 }
 
-fun PaymentParams.payPostParams(isTest: Boolean): String = run {
+internal fun PaymentParams.payPostParams(isTest: Boolean): String = run {
 
     var result = ""
     var signature = ""
@@ -97,6 +102,7 @@ fun PaymentParams.payPostParams(isTest: Boolean): String = run {
 
     this.customer.ip?.takeIf { it.isNotEmpty() }?.let {
         result += "&UserIp=$it"
+        signature += ":$it"
     }
 
     if (isTest) {
@@ -116,7 +122,7 @@ fun PaymentParams.payPostParams(isTest: Boolean): String = run {
     result
 }
 
-fun PaymentParams.confirmHoldPostParams(): String = run {
+internal fun PaymentParams.confirmHoldPostParams(): String = run {
 
     var result = ""
     var signature = ""
@@ -159,7 +165,7 @@ fun PaymentParams.confirmHoldPostParams(): String = run {
     result
 }
 
-fun PaymentParams.cancelHoldPostParams(): String = run {
+internal fun PaymentParams.cancelHoldPostParams(): String = run {
 
     var result = ""
     var signature = ""
@@ -193,7 +199,7 @@ fun PaymentParams.cancelHoldPostParams(): String = run {
     result
 }
 
-fun PaymentParams.recurrentPostParams(): String = run {
+internal fun PaymentParams.recurrentPostParams(): String = run {
 
     var result = ""
     var signature = ""
@@ -241,7 +247,12 @@ fun PaymentParams.recurrentPostParams(): String = run {
     result
 }
 
-fun md5Hash(str: String): String {
+private fun md5Hash(str: String): String {
     val md = MessageDigest.getInstance("MD5")
     return BigInteger(1, md.digest(str.toByteArray(Charsets.UTF_8))).toString(16).padStart(32, '0')
+}
+
+private fun Date.toIsoString(): String {
+    val dateFormat: DateFormat = SimpleDateFormat(ISO_8601_24H_FULL_FORMAT, Locale.getDefault())
+    return dateFormat.format(this)
 }

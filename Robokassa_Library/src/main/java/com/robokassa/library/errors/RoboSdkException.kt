@@ -1,3 +1,3 @@
 package com.robokassa.library.errors
 
-class RoboSdkException(throwable: Throwable) : RuntimeException(throwable.message, throwable)
+internal class RoboSdkException(throwable: Throwable) : RuntimeException(throwable.message, throwable)

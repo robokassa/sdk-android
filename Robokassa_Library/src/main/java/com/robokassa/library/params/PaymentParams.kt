@@ -5,12 +5,24 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.robokassa.library.errors.RoboSdkException
 
+/**
+ * Объект данных о параметрах платежа.
+ */
 class PaymentParams() : BaseParams(), Parcelable {
 
+    /**
+     * Данные о заказе.
+     */
     lateinit var order: OrderParams
 
+    /**
+     * Данные о покупателе.
+     */
     var customer: CustomerParams = CustomerParams()
 
+    /**
+     * Данные о внешнем виде страницы оплаты.
+     */
     var view: ViewParams = ViewParams()
 
     @Suppress("DEPRECATION")

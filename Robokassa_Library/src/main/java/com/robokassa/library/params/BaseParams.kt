@@ -7,10 +7,21 @@ import com.robokassa.library.errors.RoboSdkException
 
 open class BaseParams() : Params(), Parcelable {
 
+    /**
+     * Идентификатор магазина.
+     */
     lateinit var merchantLogin: String
         private set
+
+    /**
+     * Пароль#1 из личного кабинета Robokassa.
+     */
     lateinit var password1: String
         private set
+
+    /**
+     * Пароль#2 из личного кабинета Robokassa.
+     */
     lateinit var password2: String
         private set
 

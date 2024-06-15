@@ -1,5 +1,9 @@
 package com.robokassa.library.models
 
+/**
+ * Объект с результатом обработки действия с захолдированным платежом.
+ * @property success
+ */
 data class PayActionState(val success: Boolean) : RoboApiResponse() {
 
     companion object {
@@ -10,6 +14,10 @@ data class PayActionState(val success: Boolean) : RoboApiResponse() {
 
 }
 
+/**
+ * Объект с результатом обработки действия с рекуррентным платежом.
+ * @property success
+ */
 data class PayRecurrentState(val success: Boolean) : RoboApiResponse() {
 
     companion object {

@@ -14,7 +14,6 @@ import com.robokassa.library.EXTRA_INVOICE_ID
 import com.robokassa.library.view.RobokassaActivity
 import com.robokassa.library.errors.RoboApiException
 import com.robokassa.library.errors.asRoboApiException
-import com.robokassa.library.models.CheckPayState
 import com.robokassa.library.models.CheckPayStateCode
 import com.robokassa.library.models.CheckRequestCode
 import com.robokassa.library.params.PaymentParams
@@ -23,6 +22,13 @@ import java.io.Serializable
 
 object RobokassaPayLauncher {
     sealed class Result
+
+    /**
+     * Объект успешного возврата из окна оплаты Robokassa.
+     * @property invoiceId Номер успешно оплаченного заказа
+     * @property resultCode
+     * @property stateCode
+     */
     class Success(
         val invoiceId: Int?,
         val resultCode: CheckRequestCode?,
@@ -30,6 +36,14 @@ object RobokassaPayLauncher {
     ) : Result()
 
     data object Canceled : Result()
+
+    /**
+     * Объект возврата с ошибкой из окна оплаты Robokassa.
+     * @property error
+     * @property resultCode
+     * @property stateCode
+     * @property desc
+     */
     class Error(
         val error: Throwable?,
         val resultCode: CheckRequestCode?,
@@ -40,6 +54,10 @@ object RobokassaPayLauncher {
         constructor(error: RoboApiException) : this(error, error.response?.requestCode, error.response?.stateCode, error.response?.desc)
     }
 
+    /**
+     * Объект для запуска окна оплаты Robokassa.
+     * @property paymentParams
+     */
     @Parcelize
     class StartPay(
         val paymentParams: PaymentParams

@@ -10,6 +10,9 @@ import com.robokassa.library.models.RoboApiResponse
 import com.robokassa.library.params.PaymentParams
 import kotlinx.coroutines.flow.MutableStateFlow
 
+/**
+ * Класс для работы с платежами
+ */
 class PaymentAction internal constructor(
     private val api: ApiClient = ApiClient(),
     private val manager: CoroutineManager = CoroutineManager()
@@ -18,6 +21,10 @@ class PaymentAction internal constructor(
     private val _state = MutableStateFlow<RoboApiResponse>(PayActionIdle)
     val state = _state
 
+    /**
+     * Метод запуска подтверждения предварительно захолдированного платежа.
+     * @param params Параметры платежа
+     */
     fun confirmHold(params: PaymentParams) {
         _state.value = PayActionIdle
         manager.launchOnBackground {
@@ -29,6 +36,10 @@ class PaymentAction internal constructor(
         }
     }
 
+    /**
+     * Метод запуска отмены предварительно захолдированного платежа.
+     * @param params Параметры платежа
+     */
     fun cancelHold(params: PaymentParams) {
         _state.value = PayActionIdle
         manager.launchOnBackground {
@@ -40,6 +51,10 @@ class PaymentAction internal constructor(
         }
     }
 
+    /**
+     * Метод запуска рекуррентного (повторного) платежа.
+     * @param params Параметры платежа
+     */
     fun payRecurrent(params: PaymentParams) {
         _state.value = PayActionIdle
         manager.launchOnBackground {

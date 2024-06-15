@@ -6,12 +6,28 @@ import android.os.Parcelable
 import com.robokassa.library.errors.RoboSdkException
 import com.robokassa.library.models.Culture
 
+/**
+ * Объект данных о покупателе.
+ */
 class CustomerParams() : Params(), Parcelable {
 
+    /**
+     *
+     * Язык общения с клиентом (в соответствии с ISO 3166-1). Определяет на каком языке будет страница
+     * Robokassa, на которую попадёт покупатель. Если параметр не передан, то используются региональные
+     * настройки браузера покупателя. Для значений отличных от ru или en используется английский язык.
+     */
     var culture: Culture? = null
 
+    /**
+     * Если параметр передан, то email покупателя автоматически подставляется в платёжную форму Robokassa.
+     */
     var email: String? = null
 
+    /**
+     * Передача этого параметра (Ip конечного пользователя) желательна для усиления безопасности,
+     * предотвращению фрода и противодействию мошенникам.
+     */
     var ip: String? = null
 
     @Suppress("DEPRECATION")
