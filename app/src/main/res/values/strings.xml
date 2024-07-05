@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Robokassa</string>
+    <string name="app_button_simple_pay">Простая оплата</string>
+    <string name="app_button_holding_pay">Холдирование</string>
+    <string name="app_button_recurrent_pay">Рекуррентная оплата</string>
+    <string name="app_order_hint">Укажите номер заказа</string>
+    <string name="app_hold_title">Обработка холдирования</string>
+    <string name="app_hold_confirm">Подтверждение холдирования</string>
+    <string name="app_hold_cancel">Отмена холдирования</string>
+    <string name="app_hold_confirm_success">Успешное подтверждение холдирования</string>
+    <string name="app_hold_confirm_fail">Ошибка подтверждения холдирования</string>
+    <string name="app_hold_cancel_success">Успешная отмена холдирования</string>
+    <string name="app_hold_cancel_fail">Ошибка отмены холдирования</string>
+    <string name="app_recurrent_confirm">Проведение повторной оплаты</string>
+    <string name="app_recurrent_confirm_success">Успешная повторная оплата</string>
+    <string name="app_recurrent_confirm_fail">Ошибка повторной оплаты</string>
+</resources>
