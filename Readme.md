@@ -33,7 +33,7 @@ implementation 'example'
    
    - данные о покупателе [CustomerParams](https://github.com/robokassa/sdk-adnroid/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/params/CustomerParams.kt)
    
-   - данные о внешнем виде страницы оплаты [ViewParams](https://github.com/robokassa/sdk-adnroid/tree/main/Robokassa_Library/tree/main/java/com/robokassa/library/params/ViewParams.kt)
+   - данные о внешнем виде страницы оплаты [ViewParams](https://github.com/robokassa/sdk-adnroid/blob/main/Robokassa_Library/src/main/java/com/robokassa/library/params/ViewParams.kt)
 
 ```kotlin
     val paymentParams =
@@ -89,7 +89,7 @@ implementation 'example'
      
    - при отмене платежа возвращается RobokassaPayLauncher.Canceled
    
-   - при неуспешном платеже в ответ приходит [RobokassaPayLauncher.Error](https://github.com/robokassa/sdk-adnroid/src/main/Robokassa_Library/src/main/java/com/robokassa/library/pay/RobokassaPayLauncher.kt), внутри которого находятся:
+   - при неуспешном платеже в ответ приходит [RobokassaPayLauncher.Error](https://github.com/robokassa/sdk-adnroid/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/pay/RobokassaPayLauncher.kt), внутри которого находятся:
    
      - error - Throwable
      
