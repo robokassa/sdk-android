@@ -27,13 +27,13 @@ implementation 'example'
 ### Вызов платежного окна
 Чтобы настроить платежное окно для проведения платежа, требуется:
 
-1. Создать объект [PaymentParams](https://github.com/robokassa/sdk-adnroid/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/params/PaymentParams.kt), который включает в себя:
+1. Создать объект [PaymentParams](https://github.com/robokassa/sdk-android/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/params/PaymentParams.kt), который включает в себя:
 
-   - данные о заказе [OrderParams](https://github.com/robokassa/sdk-adnroid/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/params/OrderParams.kt)
+   - данные о заказе [OrderParams](https://github.com/robokassa/sdk-android/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/params/OrderParams.kt)
    
-   - данные о покупателе [CustomerParams](https://github.com/robokassa/sdk-adnroid/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/params/CustomerParams.kt)
+   - данные о покупателе [CustomerParams](https://github.com/robokassa/sdk-android/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/params/CustomerParams.kt)
    
-   - данные о внешнем виде страницы оплаты [ViewParams](https://github.com/robokassa/sdk-adnroid/blob/main/Robokassa_Library/src/main/java/com/robokassa/library/params/ViewParams.kt)
+   - данные о внешнем виде страницы оплаты [ViewParams](https://github.com/robokassa/sdk-android/blob/main/Robokassa_Library/src/main/java/com/robokassa/library/params/ViewParams.kt)
 
 ```kotlin
     val paymentParams =
@@ -58,7 +58,7 @@ implementation 'example'
     }
 ```
 
-2. Зарегистрировать контракт [RobokassaPayLauncher.Contract](https://github.com/robokassa/sdk-adnroid/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/pay/RobokassaPayLauncher.kt), и вызвать [ActivityResultLauncher.launch](https://developer.android.com/reference/androidx/activity/result/ActivityResultLauncher#launch(kotlin.Any))
+2. Зарегистрировать контракт [RobokassaPayLauncher.Contract](https://github.com/robokassa/sdk-android/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/pay/RobokassaPayLauncher.kt), и вызвать [ActivityResultLauncher.launch](https://developer.android.com/reference/androidx/activity/result/ActivityResultLauncher#launch(kotlin.Any))
 
 ```kotlin
     val payProcessLauncher = registerForActivityResult(RobokassaPayLauncher.Contract) {
@@ -79,23 +79,23 @@ implementation 'example'
 
 3. Результат платежа вернется в ActivityResultCallback:
 
-   - при успешно завершенном платеже возвращается [RobokassaPayLauncher.Success](https://github.com/robokassa/sdk-adnroid/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/pay/RobokassaPayLauncher.kt), который содержит в себе:
+   - при успешно завершенном платеже возвращается [RobokassaPayLauncher.Success](https://github.com/robokassa/sdk-android/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/pay/RobokassaPayLauncher.kt), который содержит в себе:
    
      - invoiceId - номер оплаченного заказа
      
-     - resultCode [CheckRequestCode](https://github.com/robokassa/sdk-adnroid/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/models/CheckPay.kt) - код результата выполнения запроса в платежном окне
+     - resultCode [CheckRequestCode](https://github.com/robokassa/sdk-android/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/models/CheckPay.kt) - код результата выполнения запроса в платежном окне
      
-     - stateCode [CheckPayStateCode](https://github.com/robokassa/sdk-adnroid/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/models/CheckPay.kt) - код состояния платежа
+     - stateCode [CheckPayStateCode](https://github.com/robokassa/sdk-android/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/models/CheckPay.kt) - код состояния платежа
      
    - при отмене платежа возвращается RobokassaPayLauncher.Canceled
    
-   - при неуспешном платеже в ответ приходит [RobokassaPayLauncher.Error](https://github.com/robokassa/sdk-adnroid/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/pay/RobokassaPayLauncher.kt), внутри которого находятся:
+   - при неуспешном платеже в ответ приходит [RobokassaPayLauncher.Error](https://github.com/robokassa/sdk-android/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/pay/RobokassaPayLauncher.kt), внутри которого находятся:
    
      - error - Throwable
      
-     - resultCode [CheckRequestCode](https://github.com/robokassa/sdk-adnroid/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/models/CheckPay.kt) - код результата выполнения запроса в платежном окне
+     - resultCode [CheckRequestCode](https://github.com/robokassa/sdk-android/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/models/CheckPay.kt) - код результата выполнения запроса в платежном окне
      
-     - stateCode [CheckPayStateCode](https://github.com/robokassa/sdk-adnroid/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/models/CheckPay.kt) - код состояния платежа
+     - stateCode [CheckPayStateCode](https://github.com/robokassa/sdk-android/tree/main/Robokassa_Library/src/main/java/com/robokassa/library/models/CheckPay.kt) - код состояния платежа
      
      - desc - текстовое описание ошибки
      
