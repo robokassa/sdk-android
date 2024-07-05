@@ -27,13 +27,13 @@ implementation 'example'
 ### Вызов платежного окна
 Чтобы настроить платежное окно для проведения платежа, требуется:
 
-1. Создать объект [PaymentParams](https://bitbucket.org/ipol/rk-sdk-android/src/main/Robokassa_Library/src/main/java/com/robokassa/library/params/PaymentParams.kt), который включает в себя:
+1. Создать объект [PaymentParams](https://github.com/robokassa/sdk-adnroid/src/main/Robokassa_Library/src/main/java/com/robokassa/library/params/PaymentParams.kt), который включает в себя:
 
-   - данные о заказе [OrderParams](https://bitbucket.org/ipol/rk-sdk-android/src/main/Robokassa_Library/src/main/java/com/robokassa/library/params/OrderParams.kt)
+   - данные о заказе [OrderParams](https://github.com/robokassa/sdk-adnroid/src/main/Robokassa_Library/src/main/java/com/robokassa/library/params/OrderParams.kt)
    
-   - данные о покупателе [CustomerParams](https://bitbucket.org/ipol/rk-sdk-android/src/main/Robokassa_Library/src/main/java/com/robokassa/library/params/CustomerParams.kt)
+   - данные о покупателе [CustomerParams](https://github.com/robokassa/sdk-adnroid/src/main/Robokassa_Library/src/main/java/com/robokassa/library/params/CustomerParams.kt)
    
-   - данные о внешнем виде страницы оплаты [ViewParams](https://bitbucket.org/ipol/rk-sdk-android/src/main/Robokassa_Library/src/main/java/com/robokassa/library/params/ViewParams.kt)
+   - данные о внешнем виде страницы оплаты [ViewParams](https://github.com/robokassa/sdk-adnroid/src/main/Robokassa_Library/src/main/java/com/robokassa/library/params/ViewParams.kt)
 
 ```kotlin
     val paymentParams =
