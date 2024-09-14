@@ -119,23 +119,27 @@ class RobokassaActivity : AppCompatActivity() {
                                 it.requestCode == CheckRequestCode.SIGNATURE_ERROR ||
                                 it.requestCode == CheckRequestCode.SHOP_ERROR ||
                                 it.requestCode == CheckRequestCode.INVOICE_DOUBLE_ERROR ||
-                                it.requestCode == CheckRequestCode.INVOICE_ZERO_ERROR) {
+                                it.requestCode == CheckRequestCode.INVOICE_ZERO_ERROR
+                            ) {
                                 model.stopStatusTimer()
                                 setResult(RESULT_FIRST_USER, data)
                                 finish()
                             }
                         }
+
                         CheckPayStateCode.CANCELLED_NOT_PAYED -> {
                             model.stopStatusTimer()
                             setResult(RESULT_CANCELED, data)
                             finish()
                         }
+
                         CheckPayStateCode.PAYMENT_PAYBACK,
                         CheckPayStateCode.PAYMENT_STOPPED -> {
                             model.stopStatusTimer()
                             setResult(RESULT_FIRST_USER, data)
                             finish()
                         }
+
                         CheckPayStateCode.HOLD_SUCCESS,
                         CheckPayStateCode.PAYMENT_SUCCESS -> {
                             model.stopStatusTimer()
@@ -178,9 +182,7 @@ class RobokassaActivity : AppCompatActivity() {
                 Logger.v("WebView shouldOverrideUrlLoading ${request?.url.toString()}")
                 if (
                     request?.url?.toString()?.startsWith(
-                        "https://newbitrix.ht2.ipol.tech"
-                    ) == true || request?.url?.toString()?.startsWith(
-                        "https://robokassa.amo.services.ipol.tech/payment/success"
+                        paymentParams.successUrl
                     ) == true
                 ) {
                     model.initStatusTimer(paymentParams)
@@ -193,9 +195,7 @@ class RobokassaActivity : AppCompatActivity() {
                 Logger.v("WebView onPageStarted $url")
                 if (
                     url?.startsWith(
-                        "https://newbitrix.ht2.ipol.tech"
-                    ) == true || url?.startsWith(
-                        "https://robokassa.amo.services.ipol.tech/payment/success"
+                        paymentParams.successUrl
                     ) == true
                 ) {
                     binding.webView.isInvisible = true
