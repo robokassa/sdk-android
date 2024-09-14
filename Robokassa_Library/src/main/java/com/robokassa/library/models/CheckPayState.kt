@@ -9,12 +9,14 @@ import com.robokassa.library.helper.Logger
  * @property requestCode
  * @property stateCode
  * @property desc
+ * @property opKey
  * @property error
  */
 data class CheckPayState(
     val requestCode: CheckRequestCode,
     val stateCode: CheckPayStateCode,
     val desc: String? = null,
+    val opKey: String? = null,
     val error: RoboApiException? = null
 ) : RoboApiResponse() {
 
@@ -23,6 +25,7 @@ data class CheckPayState(
             var codeParse = ""
             var stateCodeParse = ""
             var descParse = ""
+            var opKey = ""
             try {
                 src?.konsumeXml()?.apply {
                     child("OperationStateResponse") {
@@ -32,6 +35,19 @@ data class CheckPayState(
                         }
                         childOrNull("State") {
                             stateCodeParse = childTextOrNull("Code") ?: ""
+                            skipContents()
+                        }
+                        childOrNull("Info") {
+                            val incCurrLabel = childTextOrNull("IncCurrLabel") ?: ""
+                            val incSum = childTextOrNull("IncSum") ?: ""
+                            val incAccount = childTextOrNull("IncAccount") ?: ""
+                            childOrNull("PaymentMethod") {
+                                val paymentMethod = childTextOrNull("Code") ?: ""
+                                skipContents()
+                            }
+                            val outCurrLabel = childTextOrNull("OutCurrLabel") ?: ""
+                            val outSum = childTextOrNull("OutSum") ?: ""
+                            opKey = childTextOrNull("OpKey") ?: ""
                             skipContents()
                         }
                         skipContents()
@@ -68,7 +84,8 @@ data class CheckPayState(
             return CheckPayState(
                 stateCode = stateCode,
                 requestCode = requestCode,
-                desc = descParse
+                desc = descParse,
+                opKey = opKey
             )
         }
     }

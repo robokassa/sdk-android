@@ -3,6 +3,7 @@
     <string name="app_button_simple_pay">Простая оплата</string>
     <string name="app_button_holding_pay">Холдирование</string>
     <string name="app_button_recurrent_pay">Рекуррентная оплата</string>
+    <string name="app_button_saving_pay">Оплата по сохраненной карте</string>
     <string name="app_order_hint">Укажите номер заказа</string>
     <string name="app_hold_title">Обработка холдирования</string>
     <string name="app_hold_confirm">Подтверждение холдирования</string>

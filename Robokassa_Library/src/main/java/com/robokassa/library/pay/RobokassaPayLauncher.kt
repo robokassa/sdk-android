@@ -11,6 +11,7 @@ import com.robokassa.library.EXTRA_CODE_STATE
 import com.robokassa.library.EXTRA_ERROR
 import com.robokassa.library.EXTRA_ERROR_DESC
 import com.robokassa.library.EXTRA_INVOICE_ID
+import com.robokassa.library.EXTRA_OP_KEY
 import com.robokassa.library.view.RobokassaActivity
 import com.robokassa.library.errors.RoboApiException
 import com.robokassa.library.errors.asRoboApiException
@@ -26,13 +27,15 @@ object RobokassaPayLauncher {
     /**
      * Объект успешного возврата из окна оплаты Robokassa.
      * @property invoiceId Номер успешно оплаченного заказа
+     * @property opKey Идентификатор операции (нужен для оплаты по сохраненной карте)
      * @property resultCode
      * @property stateCode
      */
     class Success(
         val invoiceId: Int?,
         val resultCode: CheckRequestCode?,
-        val stateCode: CheckPayStateCode?
+        val stateCode: CheckPayStateCode?,
+        val opKey: String?
     ) : Result()
 
     data object Canceled : Result()
@@ -60,12 +63,13 @@ object RobokassaPayLauncher {
      */
     @Parcelize
     class StartPay(
-        val paymentParams: PaymentParams
+        val paymentParams: PaymentParams,
+        val testMode: Boolean = false
     ) : Parcelable
 
     object Contract : ActivityResultContract<StartPay, Result>() {
         override fun createIntent(context: Context, input: StartPay) =
-            RobokassaActivity.intent(input.paymentParams, context)
+            RobokassaActivity.intent(input.paymentParams, input.testMode, context)
 
         override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {
             AppCompatActivity.RESULT_OK -> {
@@ -73,7 +77,8 @@ object RobokassaPayLauncher {
                 Success(
                     intent.getIntExtra(EXTRA_INVOICE_ID, -1),
                     intent.serializable(EXTRA_CODE_RESULT),
-                    intent.serializable(EXTRA_CODE_STATE)
+                    intent.serializable(EXTRA_CODE_STATE),
+                    intent.getStringExtra(EXTRA_OP_KEY)
                 )
             }
 
