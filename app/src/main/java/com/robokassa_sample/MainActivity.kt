@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         const val PWD_2 = "Y7t35UJPLS4IZAAan7SP"
         const val PWD_TEST_1 = "o1zCrG7EHdB6TYPkt0K5"
         const val PWD_TEST_2 = "zgxF4Vf1oAv4k3uR7rZT"
-        const val SUCCESS_URL = "https://robokassa.amo.services.ipol.tech/payment/success"
+        const val REDIRECT_URL = "https://robokassa.amo.services.ipol.tech"
     }
 
     private val payProcess = registerForActivityResult(RobokassaPayLauncher.Contract) { result ->
@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
                     toolbarTextColor = "#ff0000"
                 }
             }.also {
-                it.setCredentials(MERCHANT, getPwd1(), getPwd2(), SUCCESS_URL)
+                it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
             }
             params?.let {
                 payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode))
@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity() {
                     toolbarTextColor = "#aaaaaa"
                 }
             }.also {
-                it.setCredentials(MERCHANT, getPwd1(), getPwd2(), SUCCESS_URL)
+                it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
             }
             params?.let {
                 payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode))
@@ -184,7 +184,7 @@ class MainActivity : AppCompatActivity() {
                     toolbarTextColor = "#cccccc"
                 }
             }.also {
-                it.setCredentials(MERCHANT, getPwd1(), getPwd2(), SUCCESS_URL)
+                it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
             }
             params?.let {
                 payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode))
@@ -215,7 +215,7 @@ class MainActivity : AppCompatActivity() {
                     toolbarTextColor = "#ff0000"
                 }
             }.also {
-                it.setCredentials(MERCHANT, getPwd1(), getPwd2(), SUCCESS_URL)
+                it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
             }
             params?.let {
                 payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode))
@@ -286,7 +286,7 @@ class MainActivity : AppCompatActivity() {
                         receipt = sampleReceipt
                     }
                 }.also {
-                    it.setCredentials(MERCHANT, getPwd1(), getPwd2(), SUCCESS_URL)
+                    it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
                 }
                 val pa = PaymentAction.init()
                 pa.payRecurrent(recurrentParams)
@@ -329,7 +329,7 @@ class MainActivity : AppCompatActivity() {
                         toolbarTextColor = "#ff0000"
                     }
                 }.also {
-                    it.setCredentials(MERCHANT, getPwd1(), getPwd2(), SUCCESS_URL)
+                    it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
                 }
                 payProcess.launch(RobokassaPayLauncher.StartPay(recurrentParams, testMode))
             }

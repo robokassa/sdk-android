@@ -28,7 +28,7 @@ open class BaseParams() : Params(), Parcelable {
     /**
      * Адрес переадресации в случае успешной оплаты из личного кабинета Robokassa.
      */
-    lateinit var successUrl: String
+    lateinit var redirectUrl: String
         private set
 
     private constructor(parcel: Parcel) : this() {
@@ -36,7 +36,7 @@ open class BaseParams() : Params(), Parcelable {
             merchantLogin = readString() ?: ""
             password1 = readString() ?: ""
             password2 = readString() ?: ""
-            successUrl = readString() ?: ""
+            redirectUrl = readString() ?: ""
         }
     }
 
@@ -45,7 +45,7 @@ open class BaseParams() : Params(), Parcelable {
             writeString(merchantLogin)
             writeString(password1)
             writeString(password2)
-            writeString(successUrl)
+            writeString(redirectUrl)
         }
     }
 
@@ -60,12 +60,12 @@ open class BaseParams() : Params(), Parcelable {
         merchantLogin: String,
         password1: String,
         password2: String,
-        successUrl: String
+        redirectUrl: String
     ) {
         this.merchantLogin = merchantLogin
         this.password1 = password1
         this.password2 = password2
-        this.successUrl = successUrl
+        this.redirectUrl = redirectUrl
     }
 
     override fun describeContents(): Int {

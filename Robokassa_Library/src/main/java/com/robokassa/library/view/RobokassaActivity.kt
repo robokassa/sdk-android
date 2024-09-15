@@ -182,7 +182,7 @@ class RobokassaActivity : AppCompatActivity() {
                 Logger.v("WebView shouldOverrideUrlLoading ${request?.url.toString()}")
                 if (
                     request?.url?.toString()?.startsWith(
-                        paymentParams.successUrl
+                        paymentParams.redirectUrl
                     ) == true
                 ) {
                     model.initStatusTimer(paymentParams)
@@ -195,7 +195,7 @@ class RobokassaActivity : AppCompatActivity() {
                 Logger.v("WebView onPageStarted $url")
                 if (
                     url?.startsWith(
-                        paymentParams.successUrl
+                        paymentParams.redirectUrl
                     ) == true
                 ) {
                     binding.webView.isInvisible = true
