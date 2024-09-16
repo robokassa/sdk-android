@@ -60,6 +60,7 @@ object RobokassaPayLauncher {
     /**
      * Объект для запуска окна оплаты Robokassa.
      * @property paymentParams
+     * @property testMode
      */
     @Parcelize
     class StartPay(
