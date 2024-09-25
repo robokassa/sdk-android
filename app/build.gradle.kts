@@ -1,17 +1,9 @@
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
 
-val prop = Properties().apply {
-    load(FileInputStream(File(rootProject.rootDir, "local.properties")))
-}
-
 android {
-
     namespace = "com.robokassa_sample"
     compileSdk = 34
 
@@ -23,17 +15,10 @@ android {
         applicationId = "com.robokassa_sample"
         minSdk = 24
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.2"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField("String", "MERCHANT", prop["ipol_merchant"] as String)
-        buildConfigField("String", "PWD_1", prop["ipol_pwd_1"] as String)
-        buildConfigField("String", "PWD_2", prop["ipol_pwd_2"] as String)
-        buildConfigField("String", "PWD_TEST_1", prop["ipol_pwd_test_1"] as String)
-        buildConfigField("String", "PWD_TEST_2", prop["ipol_pwd_test_2"] as String)
-        buildConfigField("String", "REDIRECT_URL", prop["ipol_redirect_url"] as String)
     }
 
     buildTypes {
@@ -48,9 +33,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    buildFeatures {
-        buildConfig = true
     }
     kotlinOptions {
         jvmTarget = "1.8"

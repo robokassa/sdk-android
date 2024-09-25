@@ -25,12 +25,11 @@ import java.util.Date
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val MERCHANT = BuildConfig.MERCHANT
-        const val PWD_1 = BuildConfig.PWD_1
-        const val PWD_2 = BuildConfig.PWD_2
-        const val PWD_TEST_1 = BuildConfig.PWD_TEST_1
-        const val PWD_TEST_2 = BuildConfig.PWD_TEST_2
-        const val REDIRECT_URL = BuildConfig.REDIRECT_URL
+        const val MERCHANT = ""
+        const val PWD_1 = ""
+        const val PWD_2 = ""
+        const val PWD_TEST_1 = ""
+        const val PWD_TEST_2 = ""
     }
 
     private val payProcess = registerForActivityResult(RobokassaPayLauncher.Contract) { result ->
@@ -106,8 +105,6 @@ class MainActivity : AppCompatActivity() {
     private fun simplePayClick() {
         if (binding.orderNumber.text.isNullOrEmpty()) {
             showAnswerMessage(getString(R.string.app_order_hint))
-        } else if (binding.orderNumber.text.toString().toIntOrNull() == null) {
-            showAnswerMessage(getString(R.string.app_number_order_incorrect))
         } else {
             params = PaymentParams().setParams {
                 orderParams {
@@ -121,7 +118,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 customerParams {
                     culture = Culture.RU
-                    email = "john@doe.com"
+                    email = "p.kolosov@list.ru"
                 }
                 viewParams {
                     toolbarText = "Простая оплата"
@@ -139,8 +136,6 @@ class MainActivity : AppCompatActivity() {
     private fun holdingPayClick() {
         if (binding.orderNumber.text.isNullOrEmpty()) {
             showAnswerMessage(getString(R.string.app_order_hint))
-        } else if (binding.orderNumber.text.toString().toIntOrNull() == null) {
-            showAnswerMessage(getString(R.string.app_number_order_incorrect))
         } else {
             params = PaymentParams().setParams {
                 orderParams {
@@ -152,7 +147,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 customerParams {
                     culture = Culture.RU
-                    email = "john@doe.com"
+                    email = "p.kolosov@list.ru"
                 }
                 viewParams {
                     toolbarText = "Холдирование"
@@ -170,8 +165,6 @@ class MainActivity : AppCompatActivity() {
     private fun recurrentPayClick() {
         if (binding.orderNumber.text.isNullOrEmpty()) {
             showAnswerMessage(getString(R.string.app_order_hint))
-        } else if (binding.orderNumber.text.toString().toIntOrNull() == null) {
-            showAnswerMessage(getString(R.string.app_number_order_incorrect))
         } else {
             params = PaymentParams().setParams {
                 orderParams {
@@ -183,7 +176,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 customerParams {
                     culture = Culture.RU
-                    email = "john@doe.com"
+                    email = "p.kolosov@list.ru"
                 }
                 viewParams {
                     toolbarText = "Рекуррентный платеж"
@@ -201,8 +194,6 @@ class MainActivity : AppCompatActivity() {
     private fun savingPayClick() {
         if (binding.orderNumber.text.isNullOrEmpty()) {
             showAnswerMessage(getString(R.string.app_order_hint))
-        } else if (binding.orderNumber.text.toString().toIntOrNull() == null) {
-            showAnswerMessage(getString(R.string.app_number_order_incorrect))
         } else {
             params = PaymentParams().setParams {
                 orderParams {
@@ -216,7 +207,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 customerParams {
                     culture = Culture.RU
-                    email = "john@doe.com"
+                    email = "p.kolosov@list.ru"
                 }
                 viewParams {
                     toolbarText = "Простая оплата"
@@ -330,7 +321,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     customerParams {
                         culture = Culture.RU
-                        email = "john@doe.com"
+                        email = "p.kolosov@list.ru"
                     }
                     viewParams {
                         toolbarText = "Оплата сохраненной картой"
