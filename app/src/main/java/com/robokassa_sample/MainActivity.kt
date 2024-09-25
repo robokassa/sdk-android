@@ -40,6 +40,8 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     if (params?.order?.isRecurrent == true) {
                         showRecurrentMessage(result.invoiceId)
+                    } else if (needCheckSaving) {
+                        showSavingMessage(result.invoiceId, result.opKey)
                     } else {
                         showAnswerMessage("Code: " + result.resultCode + ", StatusCode: " + result.stateCode)
                     }
@@ -61,6 +63,9 @@ class MainActivity : AppCompatActivity() {
 
     private var params: PaymentParams? = null
 
+    private var needCheckSaving = false
+    private var testMode = false
+
     private val sampleReceipt = Receipt(
         items = listOf(
             ReceiptItem(
@@ -80,13 +85,20 @@ class MainActivity : AppCompatActivity() {
         Logger.logEnabled = true
         binding.orderNumber.setRawInputType(Configuration.KEYBOARDHIDDEN_YES)
         binding.simplePayButton.setOnClickListener {
+            needCheckSaving = false
             simplePayClick()
         }
         binding.holdingPayButton.setOnClickListener {
+            needCheckSaving = false
             holdingPayClick()
         }
         binding.recurrentPayButton.setOnClickListener {
+            needCheckSaving = false
             recurrentPayClick()
+        }
+        binding.savingPayButton.setOnClickListener {
+            needCheckSaving = true
+            savingPayClick()
         }
     }
 
@@ -113,10 +125,10 @@ class MainActivity : AppCompatActivity() {
                     toolbarTextColor = "#ff0000"
                 }
             }.also {
-                it.setCredentials(MERCHANT, PWD_1, PWD_2)
+                it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
             }
             params?.let {
-                payProcess.launch(RobokassaPayLauncher.StartPay(it))
+                payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode))
             }
         }
     }
@@ -142,10 +154,10 @@ class MainActivity : AppCompatActivity() {
                     toolbarTextColor = "#aaaaaa"
                 }
             }.also {
-                it.setCredentials(MERCHANT, PWD_1, PWD_2)
+                it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
             }
             params?.let {
-                payProcess.launch(RobokassaPayLauncher.StartPay(it))
+                payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode))
             }
         }
     }
@@ -171,13 +183,45 @@ class MainActivity : AppCompatActivity() {
                     toolbarTextColor = "#cccccc"
                 }
             }.also {
-                it.setCredentials(MERCHANT, PWD_1, PWD_2)
+                it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
             }
             params?.let {
-                payProcess.launch(RobokassaPayLauncher.StartPay(it))
+                payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode))
             }
         }
     }
+
+    private fun savingPayClick() {
+        if (binding.orderNumber.text.isNullOrEmpty()) {
+            showAnswerMessage(getString(R.string.app_order_hint))
+        } else {
+            params = PaymentParams().setParams {
+                orderParams {
+                    invoiceId = binding.orderNumber.text.toString().toInt()
+                    description = "Test Simple Pay"
+                    orderSum = 0.1
+                    receipt = sampleReceipt
+                    expirationDate = Date(Calendar.getInstance().apply {
+                        add(Calendar.DAY_OF_MONTH, 1)
+                    }.timeInMillis)
+                }
+                customerParams {
+                    culture = Culture.RU
+                    email = "p.kolosov@list.ru"
+                }
+                viewParams {
+                    toolbarText = "Простая оплата"
+                    toolbarTextColor = "#ff0000"
+                }
+            }.also {
+                it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
+            }
+            params?.let {
+                payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode))
+            }
+        }
+    }
+
 
     private fun showAnswerMessage(description: String) {
         AlertDialog.Builder(this)
@@ -241,7 +285,7 @@ class MainActivity : AppCompatActivity() {
                         receipt = sampleReceipt
                     }
                 }.also {
-                    it.setCredentials(MERCHANT, PWD_1, PWD_2)
+                    it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
                 }
                 val pa = PaymentAction.init()
                 pa.payRecurrent(recurrentParams)
@@ -259,4 +303,40 @@ class MainActivity : AppCompatActivity() {
             }
             .show()
     }
+
+    private fun showSavingMessage(invoice: Int?, opKey: String?) {
+        invoice ?: return
+        opKey ?: return
+        AlertDialog.Builder(this)
+            .setTitle(R.string.app_button_saving_pay)
+            .setPositiveButton(R.string.app_recurrent_confirm) { _, _ ->
+                needCheckSaving = false
+                val recurrentParams = PaymentParams().setParams {
+                    orderParams {
+                        invoiceId = invoice + 1
+                        description = "Test Saving Card Pay"
+                        orderSum = 0.1
+                        token = opKey
+                        receipt = sampleReceipt
+                    }
+                    customerParams {
+                        culture = Culture.RU
+                        email = "p.kolosov@list.ru"
+                    }
+                    viewParams {
+                        toolbarText = "Оплата сохраненной картой"
+                        toolbarTextColor = "#ff0000"
+                    }
+                }.also {
+                    it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
+                }
+                payProcess.launch(RobokassaPayLauncher.StartPay(recurrentParams, testMode))
+            }
+            .show()
+    }
+
+    private fun getPwd1() = if (testMode) PWD_TEST_1 else PWD_1
+
+    private fun getPwd2() = if (testMode) PWD_TEST_2 else PWD_2
+
 }

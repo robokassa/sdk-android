@@ -36,7 +36,7 @@
         android:layout_marginTop="40dp"
         android:text="@string/app_button_holding_pay"
         app:layout_constraintEnd_toEndOf="@+id/recurrentPayButton"
-        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/recurrentPayButton"
         app:layout_constraintTop_toBottomOf="@+id/simplePayButton" />
 
@@ -50,9 +50,22 @@
         android:layout_marginEnd="100dp"
         android:text="@string/app_button_recurrent_pay"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/holdingPayButton" />
+
+    <Button
+        android:id="@+id/savingPayButton"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="100dp"
+        android:text="@string/app_button_saving_pay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recurrentPayButton" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/orderNumber"
