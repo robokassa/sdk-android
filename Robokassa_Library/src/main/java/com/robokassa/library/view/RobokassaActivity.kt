@@ -180,11 +180,7 @@ class RobokassaActivity : AppCompatActivity() {
                 request: WebResourceRequest?
             ): Boolean {
                 Logger.v("WebView shouldOverrideUrlLoading ${request?.url.toString()}")
-                if (
-                    request?.url?.toString()?.startsWith(
-                        paymentParams.redirectUrl
-                    ) == true
-                ) {
+                if (checkUrl(request?.url?.toString())) {
                     model.initStatusTimer(paymentParams)
                     return true
                 }
@@ -193,11 +189,7 @@ class RobokassaActivity : AppCompatActivity() {
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 Logger.v("WebView onPageStarted $url")
-                if (
-                    url?.startsWith(
-                        paymentParams.redirectUrl
-                    ) == true
-                ) {
+                if (checkUrl(url)) {
                     binding.webView.isInvisible = true
                     model.initStatusTimer(paymentParams)
                 } else {
@@ -218,5 +210,11 @@ class RobokassaActivity : AppCompatActivity() {
 
     }
 
-
+    private fun checkUrl(url: String?): Boolean {
+        return url?.startsWith(
+            paymentParams.redirectUrl
+        ) == true || url?.startsWith(
+            "https://auth.robokassa.ru/Merchant/State/"
+        ) == true || url?.contains("ipol.tech/") == true || url?.contains("ipol.ru/") == true
+    }
 }
