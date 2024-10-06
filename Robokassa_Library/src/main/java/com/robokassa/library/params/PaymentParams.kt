@@ -31,7 +31,8 @@ class PaymentParams() : BaseParams(), Parcelable {
             setCredentials(
                 merchantLogin = readString() ?: "",
                 password1 = readString() ?: "",
-                password2 = readString() ?: ""
+                password2 = readString() ?: "",
+                redirectUrl = readString() ?: ""
             )
             order = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 readParcelable(OrderParams::class.java.classLoader, OrderParams::class.java)!!
@@ -56,6 +57,7 @@ class PaymentParams() : BaseParams(), Parcelable {
             writeString(merchantLogin)
             writeString(password1)
             writeString(password2)
+            writeString(redirectUrl)
             writeParcelable(order, flags)
             writeParcelable(customer, flags)
             writeParcelable(view, flags)

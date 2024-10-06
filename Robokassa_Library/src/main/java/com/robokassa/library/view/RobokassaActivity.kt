@@ -3,6 +3,7 @@ package com.robokassa.library.view
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +16,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -25,6 +27,7 @@ import com.robokassa.library.EXTRA_CODE_STATE
 import com.robokassa.library.EXTRA_ERROR
 import com.robokassa.library.EXTRA_ERROR_DESC
 import com.robokassa.library.EXTRA_INVOICE_ID
+import com.robokassa.library.EXTRA_OP_KEY
 import com.robokassa.library.EXTRA_PARAMS
 import com.robokassa.library.EXTRA_TEST_PARAMETERS
 import com.robokassa.library.R
@@ -35,15 +38,17 @@ import com.robokassa.library.models.CheckPayStateCode
 import com.robokassa.library.models.CheckRequestCode
 import com.robokassa.library.params.PaymentParams
 import com.robokassa.library.urlMain
+import com.robokassa.library.urlSaving
 import kotlinx.coroutines.launch
 
 @Suppress("DEPRECATION")
 class RobokassaActivity : AppCompatActivity() {
 
     companion object {
-        fun intent(options: PaymentParams, context: Context): Intent {
+        fun intent(options: PaymentParams, testMode: Boolean, context: Context): Intent {
             val intent = Intent(context, RobokassaActivity::class.java)
             intent.putExtra(EXTRA_PARAMS, options)
+            intent.putExtra(EXTRA_TEST_PARAMETERS, testMode)
             return intent
         }
     }
@@ -102,6 +107,7 @@ class RobokassaActivity : AppCompatActivity() {
                         putExtra(EXTRA_CODE_RESULT, it.requestCode)
                         putExtra(EXTRA_CODE_STATE, it.stateCode)
                         putExtra(EXTRA_ERROR_DESC, it.desc)
+                        putExtra(EXTRA_OP_KEY, it.opKey)
                         putExtra(EXTRA_ERROR, it.error)
                     }
                     when (it.stateCode) {
@@ -113,23 +119,27 @@ class RobokassaActivity : AppCompatActivity() {
                                 it.requestCode == CheckRequestCode.SIGNATURE_ERROR ||
                                 it.requestCode == CheckRequestCode.SHOP_ERROR ||
                                 it.requestCode == CheckRequestCode.INVOICE_DOUBLE_ERROR ||
-                                it.requestCode == CheckRequestCode.INVOICE_ZERO_ERROR) {
+                                it.requestCode == CheckRequestCode.INVOICE_ZERO_ERROR
+                            ) {
                                 model.stopStatusTimer()
                                 setResult(RESULT_FIRST_USER, data)
                                 finish()
                             }
                         }
+
                         CheckPayStateCode.CANCELLED_NOT_PAYED -> {
                             model.stopStatusTimer()
                             setResult(RESULT_CANCELED, data)
                             finish()
                         }
+
                         CheckPayStateCode.PAYMENT_PAYBACK,
                         CheckPayStateCode.PAYMENT_STOPPED -> {
                             model.stopStatusTimer()
                             setResult(RESULT_FIRST_USER, data)
                             finish()
                         }
+
                         CheckPayStateCode.HOLD_SUCCESS,
                         CheckPayStateCode.PAYMENT_SUCCESS -> {
                             model.stopStatusTimer()
@@ -170,23 +180,41 @@ class RobokassaActivity : AppCompatActivity() {
                 request: WebResourceRequest?
             ): Boolean {
                 Logger.v("WebView shouldOverrideUrlLoading ${request?.url.toString()}")
-                if (request?.url?.toString()
-                        ?.startsWith("https://newbitrix.ht2.ipol.tech") == true
-                ) {
+                if (checkUrl(request?.url?.toString())) {
                     model.initStatusTimer(paymentParams)
                     return true
                 }
                 return super.shouldOverrideUrlLoading(view, request)
             }
 
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                Logger.v("WebView onPageStarted $url")
+                if (checkUrl(url)) {
+                    binding.webView.isInvisible = true
+                    model.initStatusTimer(paymentParams)
+                } else {
+                    binding.webView.isInvisible = false
+                    super.onPageStarted(view, url, favicon)
+                }
+            }
+
         }
 
         val urlParams = paymentParams.payPostParams(testMode)
         binding.webView.apply {
-            postUrl(urlMain, EncodingUtils.getBytes(urlParams, "BASE64"))
+            postUrl(
+                if (paymentParams.order.token.isNullOrEmpty()) urlMain else urlSaving,
+                EncodingUtils.getBytes(urlParams, "BASE64")
+            )
         }
 
     }
 
-
+    private fun checkUrl(url: String?): Boolean {
+        return url?.startsWith(
+            paymentParams.redirectUrl
+        ) == true || url?.startsWith(
+            "https://auth.robokassa.ru/Merchant/State/"
+        ) == true || url?.contains("ipol.tech/") == true || url?.contains("ipol.ru/") == true
+    }
 }

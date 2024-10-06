@@ -92,6 +92,11 @@ internal fun PaymentParams.payPostParams(isTest: Boolean): String = run {
         result += "&IncCurrLabel=$it"
     }
 
+    this.order.token?.takeIf { it.isNotEmpty() }?.let {
+        result += "&Token=$it"
+        signature += ":$it"
+    }
+
     this.customer.culture?.let {
         result += "&Culture=${it.iso}"
     }
@@ -118,6 +123,7 @@ internal fun PaymentParams.payPostParams(isTest: Boolean): String = run {
     result += "&SignatureValue=$signatureValue"
 
     Logger.i("Post params: $result")
+    Logger.i("Post token: ${this.order.token}")
 
     result
 }

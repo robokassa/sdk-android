@@ -25,11 +25,12 @@ import java.util.Date
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val MERCHANT = ""
-        const val PWD_1 = ""
-        const val PWD_2 = ""
-        const val PWD_TEST_1 = ""
-        const val PWD_TEST_2 = ""
+        const val MERCHANT = BuildConfig.MERCHANT
+        const val PWD_1 = BuildConfig.PWD_1
+        const val PWD_2 = BuildConfig.PWD_2
+        const val PWD_TEST_1 = BuildConfig.PWD_TEST_1
+        const val PWD_TEST_2 = BuildConfig.PWD_TEST_2
+        const val REDIRECT_URL = BuildConfig.REDIRECT_URL
     }
 
     private val payProcess = registerForActivityResult(RobokassaPayLauncher.Contract) { result ->
@@ -118,7 +119,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 customerParams {
                     culture = Culture.RU
-                    email = "p.kolosov@list.ru"
+                    email = "john@doe.com"
                 }
                 viewParams {
                     toolbarText = "Простая оплата"
@@ -147,7 +148,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 customerParams {
                     culture = Culture.RU
-                    email = "p.kolosov@list.ru"
+                    email = "john@doe.com"
                 }
                 viewParams {
                     toolbarText = "Холдирование"
@@ -176,7 +177,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 customerParams {
                     culture = Culture.RU
-                    email = "p.kolosov@list.ru"
+                    email = "john@doe.com"
                 }
                 viewParams {
                     toolbarText = "Рекуррентный платеж"
@@ -207,7 +208,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 customerParams {
                     culture = Culture.RU
-                    email = "p.kolosov@list.ru"
+                    email = "john@doe.com"
                 }
                 viewParams {
                     toolbarText = "Простая оплата"
@@ -321,7 +322,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     customerParams {
                         culture = Culture.RU
-                        email = "p.kolosov@list.ru"
+                        email = "john@doe.com"
                     }
                     viewParams {
                         toolbarText = "Оплата сохраненной картой"
