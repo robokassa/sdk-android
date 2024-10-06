@@ -8,8 +8,6 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.animation.Animation
-import android.view.animation.RotateAnimation
 import android.webkit.CookieManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
@@ -59,31 +57,6 @@ class RobokassaActivity : AppCompatActivity() {
     private lateinit var paymentParams: PaymentParams
     private var testMode = false
 
-    private val rotate1 = RotateAnimation(
-        0f, 359f,
-        Animation.RELATIVE_TO_SELF, 0.5f,
-        Animation.RELATIVE_TO_SELF, 0.5f
-    ).apply {
-        duration = 2800
-        repeatCount = Animation.INFINITE
-    }
-    private val rotate2 = RotateAnimation(
-        0f, 359f,
-        Animation.RELATIVE_TO_SELF, 0.5f,
-        Animation.RELATIVE_TO_SELF, 0.5f
-    ).apply {
-        duration = 2400
-        repeatCount = Animation.INFINITE
-    }
-    private val rotate3 = RotateAnimation(
-        0f, 359f,
-        Animation.RELATIVE_TO_SELF, 0.5f,
-        Animation.RELATIVE_TO_SELF, 0.5f
-    ).apply {
-        duration = 2200
-        repeatCount = Animation.INFINITE
-    }
-
     private val model: RobokassaViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -124,7 +97,6 @@ class RobokassaActivity : AppCompatActivity() {
                 e.printStackTrace()
             }
         }
-        initProgressAnimation()
         initWebView()
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -219,11 +191,9 @@ class RobokassaActivity : AppCompatActivity() {
                 Logger.v("WebView onPageStarted $url")
                 if (checkUrl(url)) {
                     binding.webView.isInvisible = true
-                    binding.progress.isInvisible = false
                     model.initStatusTimer(paymentParams)
                 } else {
                     binding.webView.isInvisible = false
-                    binding.progress.isInvisible = true
                     super.onPageStarted(view, url, favicon)
                 }
             }
@@ -246,11 +216,5 @@ class RobokassaActivity : AppCompatActivity() {
         ) == true || url?.startsWith(
             "https://auth.robokassa.ru/Merchant/State/"
         ) == true || url?.contains("ipol.tech/") == true || url?.contains("ipol.ru/") == true
-    }
-
-    private fun initProgressAnimation() {
-        binding.progressStroke.startAnimation(rotate1)
-        binding.progressCircle.startAnimation(rotate2)
-        binding.progressLogo.startAnimation(rotate3)
     }
 }
