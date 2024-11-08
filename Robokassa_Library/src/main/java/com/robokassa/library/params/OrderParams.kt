@@ -48,6 +48,13 @@ class OrderParams() : Params(), Parcelable {
     var incCurrLabel: String? = null
 
     /**
+     * OpKey операции, карту которой мы хотим использовать для новых оплат.
+     * Если параметр указан, то покупатель при переходе на сайт Robokassa попадёт на страницу оплаты,
+     * где не будет предлагаться ввод карты или выбор способа оплаты, но будет требоваться ввод cvc2/cvv2.
+     */
+    var token: String? = null
+
+    /**
      * Этот параметр показывает, что выставление данного счета будет повторяющимся.
      */
     var isRecurrent: Boolean = false
@@ -87,6 +94,7 @@ class OrderParams() : Params(), Parcelable {
             orderSum = readDouble()
             description = readString()
             incCurrLabel = readString()
+            token = readString()
             isRecurrent = readByte().toInt() != 0
             isHold = readByte().toInt() != 0
             outSumCurrency = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -114,6 +122,7 @@ class OrderParams() : Params(), Parcelable {
             writeDouble(orderSum)
             writeString(description)
             writeString(incCurrLabel)
+            writeString(token)
             writeByte((if (isRecurrent) 1 else 0).toByte())
             writeByte((if (isHold) 1 else 0).toByte())
             writeSerializable(outSumCurrency)
