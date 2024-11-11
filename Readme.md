@@ -16,14 +16,35 @@ SDK позволяет интегрировать прием платежей ч
 
 Данные можно найти в личном кабинете (ЛК) Robokassa.
 
+В корне репозитория собран проект состоящий из библиотеки (Robokassa_Library) и демо приложения (app) которое показывает пример интеграции SDK:
+
+![Демо экран](https://ipol.ru/webService/robokassa/sc3.png)
+![Плат.форма](https://ipol.ru/webService/robokassa/sc4.png)
+
+Для сборки демо-приложения откройте все содержимое репозитория как проект, укажите свои api-ключи в **app/src/main/java/com/robokassa_sample/MainActivity.kt** и запустите его.
+	
+*Для указания Success Url и Fail Url в ЛК Робокассы вы можете использовать такие страницы заглушки:*
+
+[success url](https://ipol.ru/webService/robokassa/success.html)
+
+[fail url](https://ipol.ru/webService/robokassa/fail.html)
+    
 ### Подключение зависимостей
-Для подключения SDK добавьте в [build.gradle][build-config] вашего проекта следующие зависимости:
+Для подключения библиотеки в ваш проект вы можете:
+
+  - либо скачать и подключить aar файл (из app/lib). Добавьте его в папку lib вашего проекта и подключите зависимость в [build.gradle].
 ```groovy
-implementation 'example'
+implementation (name: 'robokassa-library', ext: 'aar')
+```
+  
+  - либо выгрузите Robokassa_Library в папку проекта и подключите библиотеку как модуль, указав в [settings.gradle] вашего проекта.
+```groovy
+include(":Robokassa_Library")
 ```
 
+
 ## Проведение платежей
-Библиотека использует стандартную платежную форму Robokassaв в виде WebView, что упрощает интеграцию и не требует реализации собственных платежных форм и серверных решений.
+Библиотека использует стандартную платежную форму Robokassa в виде WebView, что упрощает интеграцию и не требует реализации собственных платежных форм и серверных решений.
 Процесс платежа состоит из 2-х этапов: вызова платежного окна Robokassa с заданными параметрами и затем, если требуется, осуществления дополнительного запроса к сервису Robokassa для необходимого действия - отмены или подтверждения отложенного платежя или проведения повторной оплаты.
 
 ### Вызов платежного окна
@@ -84,6 +105,8 @@ implementation 'example'
    - при успешно завершенном платеже возвращается [RobokassaPayLauncher.Success](https://bitbucket.org/ipol/rk-sdk-android/src/main/Robokassa_Library/src/main/java/com/robokassa/library/pay/RobokassaPayLauncher.kt), который содержит в себе:
    
      - invoiceId - номер оплаченного заказа
+     
+     - opKey - идентификатор операции (нужен для оплаты по сохраненной карте)
      
      - resultCode [CheckRequestCode](https://bitbucket.org/ipol/rk-sdk-android/src/main/Robokassa_Library/src/main/java/com/robokassa/library/models/CheckPay.kt) - код результата выполнения запроса в платежном окне
      
@@ -165,4 +188,30 @@ implementation 'example'
             }
         }
     }
+```
+
+3. При выполнении повторного платежа по ранее сохраненной карте необходимо заново вызвать платежное окно Robokassa, указав код предыдущей операции с этой картой
+   
+```kotlin
+    // Совершение повторного платежа
+    val paymentParams =
+    PaymentParams().setParams {
+        orderParams {                           // данные заказа
+            invoiceId = 12345                   // номер заказа в системе продавца
+            orderSum = 200.50			        // сумма заказа
+            token = opKey                       // идентификатор предыдущей операции с картой
+            description = "Оплата по заказу"    // описание, показываемое покупателю в платежном окне
+            receipt = Receipt                   // объект фискального чека
+        }
+        customerParams {                        // данные покупателя
+            culture = Culture.RU                // язык интерфейса
+            email = "john@doe.com"              // электронная почта покупателя для отправки уведомлений об оплате
+        }
+        viewParams {
+            toolbarText = "Оплата сохраненной картой" // заголовок окна оплаты
+        }
+    }.also {
+        it.setCredentials(MERCHANT_LOGIN, PASSWORD_1, PASSWORD_2)
+    }
+    payProcessLauncher.launch(RobokassaPayLauncher.StartPay(paymentParams))
 ```
