@@ -15,4 +15,5 @@
     <string name="app_recurrent_confirm">Проведение повторной оплаты</string>
     <string name="app_recurrent_confirm_success">Успешная повторная оплата</string>
     <string name="app_recurrent_confirm_fail">Ошибка повторной оплаты</string>
+    <string name="app_number_order_incorrect">Неверный номер заказа</string>
 </resources>
