@@ -113,7 +113,7 @@ internal fun PaymentParams.payPostParams(isTest: Boolean): String = run {
     if (isTest) {
         result += "&IsTest=1"
     }
-
+    result += "&shp_label=sdk_android"
     signature += ":" + this.password1 + ":shp_label=sdk_android"
 
     val signatureValue = md5Hash(signature)
