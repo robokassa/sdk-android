@@ -106,6 +106,8 @@ class MainActivity : AppCompatActivity() {
     private fun simplePayClick() {
         if (binding.orderNumber.text.isNullOrEmpty()) {
             showAnswerMessage(getString(R.string.app_order_hint))
+        } else if (binding.orderNumber.text.toString().toIntOrNull() == null) {
+            showAnswerMessage(getString(R.string.app_number_order_incorrect))
         } else {
             params = PaymentParams().setParams {
                 orderParams {
@@ -137,6 +139,8 @@ class MainActivity : AppCompatActivity() {
     private fun holdingPayClick() {
         if (binding.orderNumber.text.isNullOrEmpty()) {
             showAnswerMessage(getString(R.string.app_order_hint))
+        } else if (binding.orderNumber.text.toString().toIntOrNull() == null) {
+            showAnswerMessage(getString(R.string.app_number_order_incorrect))
         } else {
             params = PaymentParams().setParams {
                 orderParams {
@@ -166,6 +170,8 @@ class MainActivity : AppCompatActivity() {
     private fun recurrentPayClick() {
         if (binding.orderNumber.text.isNullOrEmpty()) {
             showAnswerMessage(getString(R.string.app_order_hint))
+        } else if (binding.orderNumber.text.toString().toIntOrNull() == null) {
+            showAnswerMessage(getString(R.string.app_number_order_incorrect))
         } else {
             params = PaymentParams().setParams {
                 orderParams {
@@ -195,6 +201,8 @@ class MainActivity : AppCompatActivity() {
     private fun savingPayClick() {
         if (binding.orderNumber.text.isNullOrEmpty()) {
             showAnswerMessage(getString(R.string.app_order_hint))
+        } else if (binding.orderNumber.text.toString().toIntOrNull() == null) {
+            showAnswerMessage(getString(R.string.app_number_order_incorrect))
         } else {
             params = PaymentParams().setParams {
                 orderParams {
