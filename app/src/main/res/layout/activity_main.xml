@@ -27,7 +27,7 @@
         app:layout_constraintEnd_toEndOf="@+id/holdingPayButton"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/holdingPayButton"
-        app:layout_constraintTop_toBottomOf="@+id/orderNumber" />
+        app:layout_constraintTop_toBottomOf="@+id/orderSum" />
 
     <Button
         android:id="@+id/holdingPayButton"
@@ -71,12 +71,24 @@
         android:id="@+id/orderNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="30dp"
         android:ems="10"
         android:hint="@string/app_order_hint"
         android:inputType="number"
         app:layout_constraintEnd_toEndOf="@+id/simplePayButton"
         app:layout_constraintStart_toStartOf="@+id/simplePayButton"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/orderSum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:hint="@string/app_sum_hint"
+        android:inputType="numberDecimal"
+        app:layout_constraintEnd_toEndOf="@+id/simplePayButton"
+        app:layout_constraintStart_toStartOf="@+id/simplePayButton"
+        app:layout_constraintTop_toBottomOf="@+id/orderNumber" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

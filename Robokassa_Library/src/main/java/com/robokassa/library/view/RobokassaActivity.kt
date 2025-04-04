@@ -11,11 +11,13 @@ import android.view.MenuItem
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
 import android.webkit.CookieManager
+import android.webkit.URLUtil
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebSettings.LOAD_NORMAL
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
@@ -98,6 +100,7 @@ class RobokassaActivity : AppCompatActivity() {
             intent?.getParcelableExtra(EXTRA_PARAMS)
         }
         if (pp == null) {
+            Toast.makeText(this, "Payment params not set", Toast.LENGTH_LONG).show()
             finish()
         } else {
             paymentParams = pp
@@ -178,6 +181,12 @@ class RobokassaActivity : AppCompatActivity() {
                 }
             }
         }
+        checkIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        checkIntent(intent)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -208,11 +217,19 @@ class RobokassaActivity : AppCompatActivity() {
                 request: WebResourceRequest?
             ): Boolean {
                 Logger.v("WebView shouldOverrideUrlLoading ${request?.url.toString()}")
-                if (checkUrl(request?.url?.toString())) {
+                return if (checkUrl(request?.url?.toString())) {
                     model.initStatusTimer(paymentParams)
-                    return true
+                    true
+                } else if (checkWebLinks(request?.url?.toString())) {
+                    super.shouldOverrideUrlLoading(view, request)
+                } else {
+                    try {
+                        startActivity(Intent(Intent.ACTION_VIEW, request?.url))
+                        true
+                    } catch (e: Exception) {
+                        false
+                    }
                 }
-                return super.shouldOverrideUrlLoading(view, request)
             }
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
@@ -248,9 +265,27 @@ class RobokassaActivity : AppCompatActivity() {
         ) == true || url?.contains("ipol.tech/") == true || url?.contains("ipol.ru/") == true
     }
 
+    private fun checkWebLinks(url: String?): Boolean {
+        return url != null && (URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url))
+    }
+
     private fun initProgressAnimation() {
         binding.progressStroke.startAnimation(rotate1)
         binding.progressCircle.startAnimation(rotate2)
         binding.progressLogo.startAnimation(rotate3)
+    }
+
+    private fun checkIntent(i : Intent?) {
+        val data = i?.dataString
+        if (data?.endsWith("success.html") == true) {
+            Toast.makeText(this, "Payment success", Toast.LENGTH_LONG).show()
+            if (::paymentParams.isInitialized) {
+                binding.webView.isInvisible = true
+                binding.progress.isInvisible = false
+                model.initStatusTimer(paymentParams)
+            }
+        } else if (data?.endsWith("fail.html") == true) {
+            Toast.makeText(this, "Payment error", Toast.LENGTH_LONG).show()
+        }
     }
 }

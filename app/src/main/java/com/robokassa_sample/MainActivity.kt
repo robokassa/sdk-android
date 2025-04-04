@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
                 orderParams {
                     invoiceId = binding.orderNumber.text.toString().toInt()
                     description = "Test Simple Pay"
-                    orderSum = 0.1
+                    orderSum = binding.orderSum.text.toString().toDoubleOrNull() ?: 0.1
                     receipt = sampleReceipt
                     expirationDate = Date(Calendar.getInstance().apply {
                         add(Calendar.DAY_OF_MONTH, 1)
