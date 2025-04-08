@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
@@ -224,10 +225,39 @@ class RobokassaActivity : AppCompatActivity() {
                     super.shouldOverrideUrlLoading(view, request)
                 } else {
                     try {
-                        startActivity(Intent(Intent.ACTION_VIEW, request?.url))
+                        val i = if (request?.url?.toString()?.startsWith("intent://") == true) {
+                            Intent.parseUri(request.url?.toString(), Intent.URI_INTENT_SCHEME)
+                        } else {
+                            Intent(Intent.ACTION_VIEW, request?.url)
+                        }
+                        startActivity(i)
                         true
                     } catch (e: Exception) {
-                        false
+                        Toast.makeText(this@RobokassaActivity, "No apps to open", Toast.LENGTH_LONG).show()
+                        true
+                    }
+                }
+            }
+
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                Logger.v("WebView shouldOverrideUrlLoading ${url.toString()}")
+                return if (checkUrl(url)) {
+                    model.initStatusTimer(paymentParams)
+                    true
+                } else if (checkWebLinks(url)) {
+                    super.shouldOverrideUrlLoading(view, url)
+                } else {
+                    try {
+                        val i = if (url?.startsWith("intent://") == true) {
+                            Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
+                        } else {
+                            Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        }
+                        startActivity(i)
+                        true
+                    } catch (e: Exception) {
+                        Toast.makeText(this@RobokassaActivity, "No apps to open d", Toast.LENGTH_LONG).show()
+                        true
                     }
                 }
             }
