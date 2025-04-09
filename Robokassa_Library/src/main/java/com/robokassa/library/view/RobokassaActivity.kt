@@ -182,12 +182,6 @@ class RobokassaActivity : AppCompatActivity() {
                 }
             }
         }
-        checkIntent(intent)
-    }
-
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        checkIntent(intent)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -303,19 +297,5 @@ class RobokassaActivity : AppCompatActivity() {
         binding.progressStroke.startAnimation(rotate1)
         binding.progressCircle.startAnimation(rotate2)
         binding.progressLogo.startAnimation(rotate3)
-    }
-
-    private fun checkIntent(i : Intent?) {
-        val data = i?.dataString
-        if (data?.endsWith("success.html") == true) {
-            Toast.makeText(this, "Payment success", Toast.LENGTH_LONG).show()
-            if (::paymentParams.isInitialized) {
-                binding.webView.isInvisible = true
-                binding.progress.isInvisible = false
-                model.initStatusTimer(paymentParams)
-            }
-        } else if (data?.endsWith("fail.html") == true) {
-            Toast.makeText(this, "Payment error", Toast.LENGTH_LONG).show()
-        }
     }
 }

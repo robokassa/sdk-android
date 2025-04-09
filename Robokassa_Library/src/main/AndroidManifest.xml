@@ -7,16 +7,6 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".view.RobokassaActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                    android:host="ipol.ru"
-                    android:pathPrefix="/robokassa" />
-            </intent-filter>
-
-        </activity>
+            android:exported="false"/>
     </application>
 </manifest>

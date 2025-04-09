@@ -1,9 +1,12 @@
 package com.robokassa_sample
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isInvisible
 import androidx.lifecycle.lifecycleScope
 import com.robokassa.library.helper.Logger
 import com.robokassa.library.models.CheckPayStateCode
@@ -101,6 +104,12 @@ class MainActivity : AppCompatActivity() {
             needCheckSaving = true
             savingPayClick()
         }
+        checkIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        checkIntent(intent)
     }
 
     private fun simplePayClick() {
@@ -347,5 +356,14 @@ class MainActivity : AppCompatActivity() {
     private fun getPwd1() = if (testMode) PWD_TEST_1 else PWD_1
 
     private fun getPwd2() = if (testMode) PWD_TEST_2 else PWD_2
+
+    private fun checkIntent(i : Intent?) {
+        val data = i?.dataString
+        if (data?.endsWith("success.html") == true) {
+            Toast.makeText(this, "Payment success", Toast.LENGTH_LONG).show()
+        } else if (data?.endsWith("fail.html") == true) {
+            Toast.makeText(this, "Payment error", Toast.LENGTH_LONG).show()
+        }
+    }
 
 }
