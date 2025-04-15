@@ -358,11 +358,17 @@ class MainActivity : AppCompatActivity() {
     private fun getPwd2() = if (testMode) PWD_TEST_2 else PWD_2
 
     private fun checkIntent(i : Intent?) {
-        val data = i?.dataString
-        if (data?.endsWith("success.html") == true) {
-            Toast.makeText(this, "Payment success", Toast.LENGTH_LONG).show()
-        } else if (data?.endsWith("fail.html") == true) {
-            Toast.makeText(this, "Payment error", Toast.LENGTH_LONG).show()
+        val data = i?.data
+        if (data?.path?.endsWith("success.html") == true) {
+            // Here you can handle success case
+            showAnswerMessage(
+                "Платеж успешно проведен"
+            )
+        } else if (data?.path?.endsWith("fail.html") == true) {
+            // Here you can handle success case
+            showAnswerMessage(
+                "Платеж завершился с ошибкой"
+            )
         }
     }
 
