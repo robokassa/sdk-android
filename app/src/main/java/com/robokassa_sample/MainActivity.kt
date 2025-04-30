@@ -1,15 +1,19 @@
 package com.robokassa_sample
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isInvisible
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.robokassa.library.helper.Logger
+import com.robokassa.library.helper.toParams
 import com.robokassa.library.models.CheckPayStateCode
+import com.robokassa.library.models.CheckRequestCode
 import com.robokassa.library.models.Culture
 import com.robokassa.library.models.PayActionState
 import com.robokassa.library.models.PayRecurrentState
@@ -20,10 +24,16 @@ import com.robokassa.library.models.Tax
 import com.robokassa.library.params.PaymentParams
 import com.robokassa.library.pay.PaymentAction
 import com.robokassa.library.pay.RobokassaPayLauncher
+import com.robokassa.library.view.RobokassaViewModel
 import com.robokassa_sample.databinding.ActivityMainBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                     } else if (needCheckSaving) {
                         showSavingMessage(result.invoiceId, result.opKey)
                     } else {
-                        showAnswerMessage("Code: " + result.resultCode + ", StatusCode: " + result.stateCode)
+                        showAnswerMessage("Статус запроса: " + decryptRequest(result.resultCode) + ", Статус ответа: " + decryptResponse(result.stateCode))
                     }
                 }
             }
@@ -56,7 +66,7 @@ class MainActivity : AppCompatActivity() {
             }
             is RobokassaPayLauncher.Error -> {
                 showAnswerMessage(
-                    "Code: " + result.resultCode + ", StatusCode: " + result.stateCode + ", Desc: " + result.desc + ", Error: " + result.error
+                    "Статус запроса: " + decryptRequest(result.resultCode) + ", Статус ответа: " + decryptResponse(result.stateCode) + ", Desc: " + result.desc + ", Error: " + result.error
                 )
                 params = null
             }
@@ -104,6 +114,9 @@ class MainActivity : AppCompatActivity() {
             needCheckSaving = true
             savingPayClick()
         }
+        binding.logButton.setOnClickListener {
+            getLogUri()
+        }
         checkIntent(intent)
     }
 
@@ -140,7 +153,7 @@ class MainActivity : AppCompatActivity() {
                 it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
             }
             params?.let {
-                payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode))
+                payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode = testMode))
             }
         }
     }
@@ -171,7 +184,7 @@ class MainActivity : AppCompatActivity() {
                 it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
             }
             params?.let {
-                payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode))
+                payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode = testMode))
             }
         }
     }
@@ -202,7 +215,7 @@ class MainActivity : AppCompatActivity() {
                 it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
             }
             params?.let {
-                payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode))
+                payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode = testMode))
             }
         }
     }
@@ -235,7 +248,7 @@ class MainActivity : AppCompatActivity() {
                 it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
             }
             params?.let {
-                payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode))
+                payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode = testMode))
             }
         }
     }
@@ -248,6 +261,34 @@ class MainActivity : AppCompatActivity() {
             }
             .setMessage(description)
             .show()
+    }
+
+    private fun decryptRequest(code: CheckRequestCode?): String {
+        return when (code) {
+            CheckRequestCode.CHECKING -> "Идет обработка запроса"
+            CheckRequestCode.SUCCESS -> "Запрос обработан успешно"
+            CheckRequestCode.SIGNATURE_ERROR -> "Неверная цифровая подпись запроса"
+            CheckRequestCode.SHOP_ERROR -> "Информация о магазине с таким MerchantLogin не найдена или магазин не активирован"
+            CheckRequestCode.INVOICE_ZERO_ERROR -> "Информация об операции с таким InvoiceID не найдена"
+            CheckRequestCode.INVOICE_DOUBLE_ERROR -> "Найдено две операции с таким InvoiceID"
+            CheckRequestCode.TIMEOUT_ERROR -> "Операция прервана по таймауту"
+            CheckRequestCode.SERVER_ERROR -> "Внутренняя ошибка сервиса"
+            else -> ""
+        }
+    }
+
+    private fun decryptResponse(code: CheckPayStateCode?): String {
+        return when (code) {
+            CheckPayStateCode.NOT_INITED -> "Операция не инициализирована"
+            CheckPayStateCode.INITED_NOT_PAYED -> "Операция только инициализирована, деньги от покупателя не получены"
+            CheckPayStateCode.CANCELLED_NOT_PAYED -> "Операция отменена, деньги от покупателя не были получены"
+            CheckPayStateCode.HOLD_SUCCESS -> "Операция находится в статусе HOLD"
+            CheckPayStateCode.PAYED_NOT_TRANSFERRED -> "Деньги от покупателя получены, производится зачисление денег на счет магазина"
+            CheckPayStateCode.PAYMENT_PAYBACK -> "Деньги после получения были возвращены покупателю"
+            CheckPayStateCode.PAYMENT_STOPPED -> "Исполнение операции приостановлено"
+            CheckPayStateCode.PAYMENT_SUCCESS -> "Платёж проведён успешно"
+            else -> ""
+        }
     }
 
     private fun showHoldingMessage() {
@@ -348,7 +389,7 @@ class MainActivity : AppCompatActivity() {
                 }.also {
                     it.setCredentials(MERCHANT, getPwd1(), getPwd2(), REDIRECT_URL)
                 }
-                payProcess.launch(RobokassaPayLauncher.StartPay(recurrentParams, testMode))
+                payProcess.launch(RobokassaPayLauncher.StartPay(recurrentParams, testMode = testMode))
             }
             .show()
     }
@@ -362,14 +403,76 @@ class MainActivity : AppCompatActivity() {
         if (data?.path?.endsWith("success.html") == true) {
             // Here you can handle success case
             showAnswerMessage(
-                "Платеж успешно проведен"
+                "Платёж проведён успешно"
             )
         } else if (data?.path?.endsWith("fail.html") == true) {
             // Here you can handle success case
             showAnswerMessage(
                 "Платеж завершился с ошибкой"
             )
+        } else if (data?.scheme == "robokassa") {
+            val prefs = getSharedPreferences("robokassa.pay.prefs", Context.MODE_PRIVATE)
+            val paramStr = prefs.getString("pay", "")
+            try {
+                paramStr.toParams()?.let {
+                    payProcess.launch(RobokassaPayLauncher.StartPay(it, testMode = testMode, onlyCheck = true))
+                } ?: run {
+                    showAnswerMessage(
+                        "Нет сохраненных платежных данных"
+                    )
+                }
+            } catch (e: Exception) {
+                showAnswerMessage(
+                    "Нет сохраненных платежных данных"
+                )
+            }
+
         }
+    }
+
+    private fun getLogUri() {
+        val formatter = SimpleDateFormat("dd.MM.yyyy_HH.mm.ss", Locale.getDefault())
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val logFile = withContext(Dispatchers.IO) {
+                    val logFile = File(
+                        filesDir,
+                        "Log_${formatter.format(Date())}.txt"
+                    )
+                    logFile.delete()
+                    if (!logFile.exists()) {
+                        logFile.createNewFile()
+                    }
+                    val c = Calendar.getInstance()
+                    c.set(Calendar.HOUR_OF_DAY, 0)
+                    c.set(Calendar.MINUTE, 0)
+                    c.set(Calendar.SECOND, 0)
+                    val stamp = c.timeInMillis - (1000 * 60 * 60 * 24 * 2)
+                    val abc = RobokassaViewModel.logs
+                    logFile.writeText(abc.joinToString(separator = "\n"))
+                    logFile
+                }
+                val emailIntent = Intent(Intent.ACTION_SEND)
+                emailIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf("p.kolosov@list.ru"))
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Support")
+                emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                emailIntent.putExtra(
+                    Intent.EXTRA_STREAM, FileProvider.getUriForFile(
+                        this@MainActivity,
+                        "${packageName}.provider", logFile
+                    )
+                )
+                emailIntent.type = "text/plain"
+                startActivity(Intent.createChooser(emailIntent, "Send mail using..."))
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, e.message ?: e.toString(), Toast.LENGTH_LONG).show()
+                }
+            }
+
+        }
+
     }
 
 }

@@ -32,6 +32,7 @@ import com.robokassa.library.EXTRA_CODE_STATE
 import com.robokassa.library.EXTRA_ERROR
 import com.robokassa.library.EXTRA_ERROR_DESC
 import com.robokassa.library.EXTRA_INVOICE_ID
+import com.robokassa.library.EXTRA_ONLY_CHECK
 import com.robokassa.library.EXTRA_OP_KEY
 import com.robokassa.library.EXTRA_PARAMS
 import com.robokassa.library.EXTRA_TEST_PARAMETERS
@@ -50,10 +51,16 @@ import kotlinx.coroutines.launch
 class RobokassaActivity : AppCompatActivity() {
 
     companion object {
-        fun intent(options: PaymentParams, testMode: Boolean, context: Context): Intent {
+        fun intent(
+            options: PaymentParams,
+            testMode: Boolean,
+            onlyCheck: Boolean,
+            context: Context
+        ): Intent {
             val intent = Intent(context, RobokassaActivity::class.java)
             intent.putExtra(EXTRA_PARAMS, options)
             intent.putExtra(EXTRA_TEST_PARAMETERS, testMode)
+            intent.putExtra(EXTRA_ONLY_CHECK, onlyCheck)
             return intent
         }
     }
@@ -129,7 +136,15 @@ class RobokassaActivity : AppCompatActivity() {
             }
         }
         initProgressAnimation()
-        initWebView()
+        if (intent?.getBooleanExtra(EXTRA_ONLY_CHECK, false) == true) {
+            binding.webView.isInvisible = true
+            binding.progress.isInvisible = false
+            model.initStatusTimer(paymentParams)
+        } else {
+            model.saveParams(this, paymentParams)
+            initWebView()
+        }
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.paymentState.collect {
@@ -153,28 +168,28 @@ class RobokassaActivity : AppCompatActivity() {
                                 it.requestCode == CheckRequestCode.INVOICE_DOUBLE_ERROR ||
                                 it.requestCode == CheckRequestCode.INVOICE_ZERO_ERROR
                             ) {
-                                model.stopStatusTimer()
+                                model.stopStatusTimer(this@RobokassaActivity)
                                 setResult(RESULT_FIRST_USER, data)
                                 finish()
                             }
                         }
 
                         CheckPayStateCode.CANCELLED_NOT_PAYED -> {
-                            model.stopStatusTimer()
+                            model.stopStatusTimer(this@RobokassaActivity)
                             setResult(RESULT_CANCELED, data)
                             finish()
                         }
 
                         CheckPayStateCode.PAYMENT_PAYBACK,
                         CheckPayStateCode.PAYMENT_STOPPED -> {
-                            model.stopStatusTimer()
+                            model.stopStatusTimer(this@RobokassaActivity)
                             setResult(RESULT_FIRST_USER, data)
                             finish()
                         }
 
                         CheckPayStateCode.HOLD_SUCCESS,
                         CheckPayStateCode.PAYMENT_SUCCESS -> {
-                            model.stopStatusTimer()
+                            model.stopStatusTimer(this@RobokassaActivity)
                             setResult(RESULT_OK, data)
                             finish()
                         }
@@ -236,11 +251,17 @@ class RobokassaActivity : AppCompatActivity() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 Logger.v("WebView shouldOverrideUrlLoading ${url.toString()}")
                 return if (checkUrl(url)) {
+                    binding.webView.isInvisible = true
+                    binding.progress.isInvisible = false
                     model.initStatusTimer(paymentParams)
                     true
                 } else if (checkWebLinks(url)) {
+                    binding.webView.isInvisible = false
+                    binding.progress.isInvisible = true
                     super.shouldOverrideUrlLoading(view, url)
                 } else {
+                    binding.webView.isInvisible = false
+                    binding.progress.isInvisible = true
                     try {
                         val i = if (url?.startsWith("intent://") == true) {
                             Intent.parseUri(url, Intent.URI_INTENT_SCHEME)

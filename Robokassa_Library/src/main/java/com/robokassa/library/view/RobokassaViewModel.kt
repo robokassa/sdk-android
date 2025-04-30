@@ -1,7 +1,10 @@
 package com.robokassa.library.view
 
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.robokassa.library.api.ApiClient
 import com.robokassa.library.api.ApiMethod
 import com.robokassa.library.errors.RoboApiException
@@ -19,12 +22,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.math.max
 
 class RobokassaViewModel : ViewModel() {
+
+    companion object {
+        val logs = mutableListOf<String>()
+    }
 
     private var job: Job? = null
 
     private var startTime = 0L
+    private var regress = 0L
 
     private val _paymentState = MutableStateFlow(
         CheckPayState(CheckRequestCode.CHECKING, CheckPayStateCode.NOT_INITED)
@@ -39,8 +48,23 @@ class RobokassaViewModel : ViewModel() {
         }
     }
 
-    fun stopStatusTimer() {
+    fun stopStatusTimer(ctx: Context) {
         job?.cancel()
+        clearParams(ctx)
+    }
+
+    fun saveParams(ctx: Context, paymentParams: PaymentParams) {
+        val prefs = ctx.getSharedPreferences("robokassa.pay.prefs", Context.MODE_PRIVATE)
+        prefs.edit().also {
+            it.putString("pay", Gson().toJson(paymentParams))
+        }.apply()
+    }
+
+    private fun clearParams(ctx: Context) {
+        val prefs = ctx.getSharedPreferences("robokassa.pay.prefs", Context.MODE_PRIVATE)
+        prefs.edit().also {
+            it.remove("pay")
+        }.apply()
     }
 
     private suspend fun request(paymentParams: PaymentParams) {
@@ -68,7 +92,7 @@ class RobokassaViewModel : ViewModel() {
                     _paymentState.value = CheckPayState(CheckRequestCode.TIMEOUT_ERROR, CheckPayStateCode.NOT_INITED)
                 }
             }
-            delay(syncServerTimeDefault)
+            delay(syncServerTimeDefault + max(100000L, regress))
             request(paymentParams)
         } else {
             _paymentState.value = CheckPayState(CheckRequestCode.TIMEOUT_ERROR, CheckPayStateCode.NOT_INITED)

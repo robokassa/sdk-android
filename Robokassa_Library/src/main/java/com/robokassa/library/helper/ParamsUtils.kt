@@ -12,6 +12,11 @@ import java.util.Locale
 
 private const val ISO_8601_24H_FULL_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
 
+fun String?.toParams(): PaymentParams? {
+    this ?: return null
+    return Gson().fromJson(this, PaymentParams::class.java)
+}
+
 internal fun PaymentParams.checkPostParams(): String = run {
 
     var result = ""

@@ -65,12 +65,13 @@ object RobokassaPayLauncher {
     @Parcelize
     class StartPay(
         val paymentParams: PaymentParams,
-        val testMode: Boolean = false
+        val testMode: Boolean = false,
+        val onlyCheck: Boolean = false
     ) : Parcelable
 
     object Contract : ActivityResultContract<StartPay, Result>() {
         override fun createIntent(context: Context, input: StartPay) =
-            RobokassaActivity.intent(input.paymentParams, input.testMode, context)
+            RobokassaActivity.intent(input.paymentParams, input.testMode, input.onlyCheck, context)
 
         override fun parseResult(resultCode: Int, intent: Intent?): Result = when (resultCode) {
             AppCompatActivity.RESULT_OK -> {
