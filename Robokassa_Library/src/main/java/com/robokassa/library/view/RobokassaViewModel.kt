@@ -1,7 +1,6 @@
 package com.robokassa.library.view
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
@@ -22,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.max
 
 class RobokassaViewModel : ViewModel() {
@@ -33,7 +33,7 @@ class RobokassaViewModel : ViewModel() {
     private var job: Job? = null
 
     private var startTime = 0L
-    private var regress = 0L
+    private var awaitExternal = AtomicBoolean(false)
 
     private val _paymentState = MutableStateFlow(
         CheckPayState(CheckRequestCode.CHECKING, CheckPayStateCode.NOT_INITED)
@@ -92,10 +92,25 @@ class RobokassaViewModel : ViewModel() {
                     _paymentState.value = CheckPayState(CheckRequestCode.TIMEOUT_ERROR, CheckPayStateCode.NOT_INITED)
                 }
             }
-            delay(syncServerTimeDefault + max(100000L, regress))
+            delay(syncServerTimeDefault)
             request(paymentParams)
         } else {
             _paymentState.value = CheckPayState(CheckRequestCode.TIMEOUT_ERROR, CheckPayStateCode.NOT_INITED)
+        }
+    }
+
+    fun setExternalPay() {
+        awaitExternal.set(true)
+    }
+
+    fun dropExternalPay() {
+        awaitExternal.set(false)
+    }
+
+    fun checkExternalPay(paymentParams: PaymentParams, callback: () -> Unit) {
+        if (awaitExternal.getAndSet(false)) {
+            initStatusTimer(paymentParams)
+            callback.invoke()
         }
     }
 

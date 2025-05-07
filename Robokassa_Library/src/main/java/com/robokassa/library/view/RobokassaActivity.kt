@@ -136,6 +136,7 @@ class RobokassaActivity : AppCompatActivity() {
             }
         }
         initProgressAnimation()
+        model.dropExternalPay()
         if (intent?.getBooleanExtra(EXTRA_ONLY_CHECK, false) == true) {
             binding.webView.isInvisible = true
             binding.progress.isInvisible = false
@@ -148,7 +149,6 @@ class RobokassaActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 model.paymentState.collect {
-                    Logger.i("Check state: $it")
                     val data = Intent().apply {
                         putExtra(EXTRA_INVOICE_ID, paymentParams.order.invoiceId)
                         putExtra(EXTRA_CODE_RESULT, it.requestCode)
@@ -204,6 +204,14 @@ class RobokassaActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onResume() {
+        super.onResume()
+        model.checkExternalPay(paymentParams) {
+            binding.webView.isInvisible = true
+            binding.progress.isInvisible = false
+        }
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private fun configureWebSettings() {
         CookieManager.getInstance().setAcceptCookie(true)
@@ -239,10 +247,12 @@ class RobokassaActivity : AppCompatActivity() {
                         } else {
                             Intent(Intent.ACTION_VIEW, request?.url)
                         }
+                        model.setExternalPay()
                         startActivity(i)
                         true
                     } catch (e: Exception) {
                         Toast.makeText(this@RobokassaActivity, "No apps to open", Toast.LENGTH_LONG).show()
+                        model.dropExternalPay()
                         true
                     }
                 }
@@ -268,10 +278,12 @@ class RobokassaActivity : AppCompatActivity() {
                         } else {
                             Intent(Intent.ACTION_VIEW, Uri.parse(url))
                         }
+                        model.setExternalPay()
                         startActivity(i)
                         true
                     } catch (e: Exception) {
                         Toast.makeText(this@RobokassaActivity, "No apps to open d", Toast.LENGTH_LONG).show()
+                        model.dropExternalPay()
                         true
                     }
                 }

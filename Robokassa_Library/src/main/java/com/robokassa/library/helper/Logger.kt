@@ -3,11 +3,16 @@ package com.robokassa.library.helper
 import android.util.Log
 import com.robokassa.library.LOG_TAG
 import com.robokassa.library.view.RobokassaViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 object Logger {
 
     var logEnabled = false
-    var logCollectEnabled = true
+    private var logCollectEnabled = false
+    private val format = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.US)
+
 
     fun v(src: String) {
         if (logEnabled) {
@@ -41,7 +46,7 @@ object Logger {
             Log.i(LOG_TAG, src)
         }
         if (logCollectEnabled) {
-            RobokassaViewModel.logs.add(src)
+            RobokassaViewModel.logs.add("${format.format(Date())} - $src")
         }
     }
 }

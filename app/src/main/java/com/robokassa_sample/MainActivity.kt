@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -447,14 +446,13 @@ class MainActivity : AppCompatActivity() {
                     c.set(Calendar.HOUR_OF_DAY, 0)
                     c.set(Calendar.MINUTE, 0)
                     c.set(Calendar.SECOND, 0)
-                    val stamp = c.timeInMillis - (1000 * 60 * 60 * 24 * 2)
                     val abc = RobokassaViewModel.logs
                     logFile.writeText(abc.joinToString(separator = "\n"))
                     logFile
                 }
                 val emailIntent = Intent(Intent.ACTION_SEND)
                 emailIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf("p.kolosov@list.ru"))
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf("john@doe.com"))
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Support")
                 emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 emailIntent.putExtra(

@@ -15,7 +15,7 @@ internal const val EXTRA_OP_KEY = "com.robokassa.PAYMENT_OP_KEY"
 internal const val FORM_URL_ENCODED = "application/x-www-form-urlencoded"
 
 internal const val syncServerTimeDefault : Long = 2000
-internal const val syncServerTimeoutDefault : Long = 40000
+internal const val syncServerTimeoutDefault : Long = 120000
 
 internal const val urlMain = "https://auth.robokassa.ru/Merchant/Index.aspx"
 internal const val urlSaving = "https://auth.robokassa.ru/Merchant/Payment/CoFPayment"
