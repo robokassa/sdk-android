@@ -22,12 +22,64 @@ SDK позволяет интегрировать прием платежей ч
 ![Плат.форма](https://ipol.ru/webService/robokassa/sc4.png)
 
 Для сборки демо-приложения откройте все содержимое репозитория как проект, укажите свои api-ключи в **app/src/main/java/com/robokassa_sample/MainActivity.kt** и запустите его.
-	
-*Для указания Success Url и Fail Url в ЛК Робокассы вы можете использовать такие страницы заглушки:*
 
-[success url](https://ipol.ru/webService/robokassa/success.html)
+Для автоматического возврата в приложение после оплаты через другие банковские (платежные) приложения, в которых есть опция возврата в магазин, необходимо зарегистрировать диплинк в приложении.
 
-[fail url](https://ipol.ru/webService/robokassa/fail.html)
+Это действие делается на уровне манифеста приложения вне SDK.
+
+```xml
+<intent-filter android:autoVerify="true">
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="http" />
+    <data android:scheme="https" />
+    <data android:host="ipol.ru" />
+    <data android:host="*.ipol.ru" />
+    <data android:pathPattern="webService/*" />
+</intent-filter>
+```
+```xml
+<intent-filter android:autoVerify="true">
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="robokassa" />
+    <data android:host="open" />
+</intent-filter>
+```
+
+Чтобы это заработало у вас, вы должны разместить на веб-сервере аналогичные ссылки со следующим содержимым:
+
+```html
+<html>
+    <body>
+   	 <script>
+   		 document.location.href="intent://scan/#Intent;scheme=robokassa://open;package=com.robokassa_sample;end';';";
+   	 </script>
+    </body>
+</html>
+```
+
+и прописать их как как Success Url и Fail Url в ЛК Робокассы.
+
+При сборке и запуске демо-приложения вы можете прописать наши ссылки в ЛК робокассы:
+https://ipol.ru/webService/robokassa/success.html
+https://ipol.ru/webService/robokassa/fail.html
+чтобы увидеть функционал в действии.
+
+Несколько видео примеров как выглядит работа демо-приложения:
+Пример с оплатой по СБП без автовозврата в приложение: https://disk.yandex.ru/i/-3GlA7WG8WvVEQ
+Пример с оплатой Сбер Пэй с автовозвратом в приложение: https://disk.yandex.ru/i/c3kxR2fMOFimAA
+Пример стандартной оплаты картой: https://disk.yandex.ru/i/osoCRRcpG0yn2w
+
+Если у вас нет подходящего веб-сервера, мы можем разместить вашу ссылку Success Url и Fail Url у нас на сервере.
+
+Также для проверки статуса платежа после возврата в приложение необходимо добавить вызов кода проверки статуса:
+
+*пример кода и детали о том как/куда добавлять вызов*
+
+Логика работы проверки статуса при возврате в приложение - в момент перехода во внешнее приложение в буфер сохраняется номер заказа незавершенного платежа *описать тут немного деталей куда сохраняется и делается ли это на уровне SDK или ВНЕ SDK если вне, то описать пример куда что надо прописать чтобы это работало* при вызове проверки статуса, информация о незавершенном платеже удаляется из буфера.
     
 ### Подключение зависимостей
 Для подключения библиотеки в ваш проект вы можете:
