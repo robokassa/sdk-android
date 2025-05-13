@@ -110,11 +110,6 @@ internal fun PaymentParams.payPostParams(isTest: Boolean): String = run {
         result += "&Email=$it"
     }
 
-    this.customer.ip?.takeIf { it.isNotEmpty() }?.let {
-        result += "&UserIp=$it"
-        signature += ":$it"
-    }
-
     if (isTest) {
         result += "&IsTest=1"
     }
