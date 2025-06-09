@@ -176,7 +176,7 @@ class RobokassaActivity : AppCompatActivity() {
 
                         CheckPayStateCode.CANCELLED_NOT_PAYED -> {
                             model.stopStatusTimer(this@RobokassaActivity)
-                            setResult(RESULT_CANCELED, data)
+                            setResult(RESULT_FIRST_USER, data)
                             finish()
                         }
 
@@ -323,7 +323,7 @@ class RobokassaActivity : AppCompatActivity() {
     }
 
     private fun checkWebLinks(url: String?): Boolean {
-        return url != null && (URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url))
+        return url != null && (URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url)) && !url.contains("mts.ru")
     }
 
     private fun initProgressAnimation() {
