@@ -6,6 +6,8 @@ SDK позволяет интегрировать прием платежей ч
 Для работы Robokassa SDK необходимо:
 - Android версии 7.0 и выше (API level 24).
 
+**ВНИМАНИЕ! Часть функционала SDK такая как закрытие фрейма после оплаты или возврат в приложение работает только в боевом режиме - поэтому не рекомендуется использовать testMode=true.** 
+
 ## Подключение SDK
 ### Общая информация
 Для работы с SDK вам понадобятся:
@@ -18,8 +20,8 @@ SDK позволяет интегрировать прием платежей ч
 
 В корне репозитория собран проект состоящий из библиотеки (Robokassa_Library) и демо приложения (app) которое показывает пример интеграции SDK:
 
-![Демо экран](https://ipol.ru/webService/robokassa/sc3.png)
-![Плат.форма](https://ipol.ru/webService/robokassa/sc4.png)
+<img alt="Демо экран" src="https://ipol.ru/webService/robokassa/sc3.png" width="300"/>
+<img alt="Плат.форма" src="https://ipol.ru/webService/robokassa/sc4.png" width="300"/>
 
 Для сборки демо-приложения откройте все содержимое репозитория как проект, укажите свои api-ключи в **app/src/main/java/com/robokassa_sample/MainActivity.kt** и запустите его.
 
