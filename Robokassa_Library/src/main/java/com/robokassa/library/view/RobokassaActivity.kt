@@ -308,7 +308,7 @@ class RobokassaActivity : AppCompatActivity() {
         binding.webView.apply {
             postUrl(
                 if (paymentParams.order.token.isNullOrEmpty()) urlMain else urlSaving,
-                getBytes(urlParams, "BASE64")
+                getBytes(urlParams)
             )
         }
 
@@ -332,11 +332,7 @@ class RobokassaActivity : AppCompatActivity() {
         binding.progressLogo.startAnimation(rotate3)
     }
 
-    private fun getBytes(data: String, charset: String): ByteArray {
-        return try {
-            data.toByteArray(charset(charset))
-        } catch (_: UnsupportedEncodingException) {
-            data.toByteArray()
-        }
+    private fun getBytes(data: String): ByteArray {
+        return data.toByteArray()
     }
 }
