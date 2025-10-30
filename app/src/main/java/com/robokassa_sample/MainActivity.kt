@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
     private var params: PaymentParams? = null
 
     private var needCheckSaving = false
-    private var testMode = false
+    private var testMode = true
 
     private val sampleReceipt = Receipt(
         items = listOf(

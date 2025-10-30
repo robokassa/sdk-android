@@ -26,7 +26,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.util.EncodingUtils
 import com.robokassa.library.EXTRA_CODE_RESULT
 import com.robokassa.library.EXTRA_CODE_STATE
 import com.robokassa.library.EXTRA_ERROR
@@ -46,6 +45,7 @@ import com.robokassa.library.params.PaymentParams
 import com.robokassa.library.urlMain
 import com.robokassa.library.urlSaving
 import kotlinx.coroutines.launch
+import java.io.UnsupportedEncodingException
 
 @Suppress("DEPRECATION")
 class RobokassaActivity : AppCompatActivity() {
@@ -308,7 +308,7 @@ class RobokassaActivity : AppCompatActivity() {
         binding.webView.apply {
             postUrl(
                 if (paymentParams.order.token.isNullOrEmpty()) urlMain else urlSaving,
-                EncodingUtils.getBytes(urlParams, "BASE64")
+                getBytes(urlParams, "BASE64")
             )
         }
 
@@ -330,5 +330,13 @@ class RobokassaActivity : AppCompatActivity() {
         binding.progressStroke.startAnimation(rotate1)
         binding.progressCircle.startAnimation(rotate2)
         binding.progressLogo.startAnimation(rotate3)
+    }
+
+    private fun getBytes(data: String, charset: String): ByteArray {
+        return try {
+            data.toByteArray(charset(charset))
+        } catch (_: UnsupportedEncodingException) {
+            data.toByteArray()
+        }
     }
 }
