@@ -36,4 +36,10 @@ enum class Tax {
     /** НДС чека по расчетной ставке 7/107. */
     @SerializedName("vat107")
     VAT_107,
+	/** НДС по ставке 22%. */
+    @SerializedName("vat22")
+    VAT_22,
+    /** НДС чека по расчетной ставке 22/122. */
+    @SerializedName("vat122")
+    VAT_122,
 }
